@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: header-head(${topic.title})}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="content-area" style="margin: 0 auto; max-width: 900px; width: 100%;">
+
+    <div style="margin-bottom: 1.5rem;">
+        <a th:href="@{/discussions}" class="btn btn-secondary btn-sm">&larr; Back to All Discussions</a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
+
+    <!-- Main Topic Box -->
+    <div class="content-card">
+        <span class="badge badge-harvesting" th:text="${topic.category}" style="margin-bottom: 0.75rem;">Category</span>
+        <h1 style="margin-bottom: 0.75rem;" th:text="${topic.title}">Discussion Title</h1>
+
+        <div style="color: var(--neutral-500); font-size: 0.88rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--neutral-200);">
+            Posted by <strong th:text="${topic.author.fullName}" style="color: var(--neutral-800);">Author Name</strong>
+            on <span th:text="${#temporals.format(topic.createdAt, 'MMMM dd, yyyy h:mm a')}">Date</span>
+        </div>
+
+        <div style="font-size: 1.05rem; line-height: 1.7; color: var(--neutral-800); white-space: pre-line;" th:text="${topic.content}">
+            Topic body content
+        </div>
+    </div>
+
+    <!-- Comments / Responses Section -->
+    <div style="margin-top: 2rem;">
+        <h3>Community Responses (<span th:text="${#lists.size(comments)}">0</span>)</h3>
+
+        <div th:each="comment : ${comments}" class="content-card" style="margin-top: 1rem; margin-bottom: 1rem; padding: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--neutral-100);">
+                <span style="font-weight: 600; color: var(--primary-800);" th:text="${comment.author.fullName}">Responder Name</span>
+                <small style="color: var(--neutral-500);" th:text="${#temporals.format(comment.createdAt, 'MMM dd, yyyy h:mm a')}">Timestamp</small>
+            </div>
+            <p style="font-size: 0.95rem; color: var(--neutral-800); white-space: pre-line;" th:text="${comment.content}">Comment text</p>
+        </div>
+
+        <div th:if="${#lists.isEmpty(comments)}" class="content-card" style="margin-top: 1rem; text-align: center; color: var(--neutral-500);">
+            No responses yet. Be the first to share your insights!
+        </div>
+
+        <!-- Add Comment Form -->
+        <div class="content-card" style="margin-top: 2rem;">
+            <h4 style="margin-bottom: 1rem;">Leave a Comment</h4>
+            <div sec:authorize="isAnonymous()" style="text-align: center; padding: 1rem;">
+                <p style="color: var(--neutral-600); margin-bottom: 1rem;">You must be signed in to join the discussion.</p>
+                <a th:href="@{/login}" class="btn btn-primary">Sign In to Comment</a>
+            </div>
+            <div sec:authorize="isAuthenticated()">
+                <form th:action="@{/discussions/comment}" method="post">
+                    <input type="hidden" name="topicId" th:value="${topic.id}">
+                    <div class="form-group">
+                        <textarea name="content" class="form-control" placeholder="Share your experience, answer, or thoughts..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Post Reply</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

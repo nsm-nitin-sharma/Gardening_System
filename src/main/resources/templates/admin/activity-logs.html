@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: header-head('Activity Logs')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="main-wrapper">
+    <aside th:replace="~{fragments/layout :: admin-sidebar('activities')}"></aside>
+
+    <main class="content-area">
+        <div style="margin-bottom: 2rem;">
+            <h1>Activity Monitoring Logs</h1>
+            <p style="color: var(--neutral-500);">Complete security audit log of user registrations, profile updates, and administrative actions</p>
+        </div>
+
+        <div class="content-card">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Log ID</th>
+                            <th>User Email</th>
+                            <th>Action Type</th>
+                            <th>Audit Details</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="log : ${activities}">
+                            <td th:text="${log.id}">1</td>
+                            <td style="font-weight: 600;" th:text="${log.userEmail}">Email</td>
+                            <td>
+                                <span class="badge badge-planning" th:text="${log.action}">ACTION</span>
+                            </td>
+                            <td th:text="${log.details}">Details</td>
+                            <td th:text="${#temporals.format(log.timestamp, 'yyyy-MM-dd HH:mm:ss')}">Time</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: header-head('Share Gardening Tip')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="main-wrapper">
+    <aside th:replace="~{fragments/layout :: gardener-sidebar('submit-tip')}"></aside>
+
+    <main class="content-area" style="max-width: 800px;">
+        <div style="margin-bottom: 2rem;">
+            <h1>Share a Gardening Tip</h1>
+            <p style="color: var(--neutral-500);">Submit practical gardening advice, plant care tips, or organic techniques</p>
+        </div>
+
+        <div class="content-card">
+            <form th:action="@{/gardener/tips/save}" method="post">
+                <div class="form-group">
+                    <label class="form-label" for="title">Tip Title *</label>
+                    <input type="text" id="title" name="title" class="form-control" placeholder="e.g. Companion Planting: Basil and Tomatoes" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="category">Category *</label>
+                    <select id="category" name="category" class="form-control" required>
+                        <option value="Vegetables & Herbs">Vegetables & Herbs</option>
+                        <option value="Soil & Fertilization">Soil & Fertilization</option>
+                        <option value="Indoor Gardening">Indoor Gardening</option>
+                        <option value="Pest Control">Pest Control</option>
+                        <option value="Flowers & Ornamentals">Flowers & Ornamentals</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="imageUrl">Photo URL (Optional)</label>
+                    <input type="url" id="imageUrl" name="imageUrl" class="form-control" placeholder="https://images.unsplash.com/...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="description">Detailed Description & Instructions *</label>
+                    <textarea id="description" name="description" class="form-control" style="min-height: 180px;" placeholder="Explain the technique, materials required, and observed benefits..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit Gardening Tip</button>
+            </form>
+        </div>
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

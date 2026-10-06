@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: header-head('User Management')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="main-wrapper">
+    <aside th:replace="~{fragments/layout :: admin-sidebar('users')}"></aside>
+
+    <main class="content-area">
+        <div style="margin-bottom: 2rem;">
+            <h1>User Accounts Management</h1>
+            <p style="color: var(--neutral-500);">Overview of registered users, role administration, active toggles, and deletion</p>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
+
+        <div class="content-card">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Email Address</th>
+                            <th>Current Role</th>
+                            <th>Status</th>
+                            <th>Role Management</th>
+                            <th>Account Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}">
+                            <td th:text="${user.id}">1</td>
+                            <td style="font-weight: 600;" th:text="${user.fullName}">Full Name</td>
+                            <td th:text="${user.email}">user@email.com</td>
+                            <td>
+                                <span class="role-tag" th:classappend="${user.role.name() == 'ROLE_ADMIN'} ? 'admin'" th:text="${user.role}">GARDENER</span>
+                            </td>
+                            <td>
+                                <span class="badge" th:classappend="${user.active} ? 'badge-approved' : 'badge-rejected'" th:text="${user.active ? 'ACTIVE' : 'DISABLED'}">ACTIVE</span>
+                            </td>
+                            <td>
+                                <form th:action="@{'/admin/users/' + ${user.id} + '/update-role'}" method="post" style="display: flex; gap: 0.4rem;">
+                                    <select name="role" class="form-control" style="width: auto; padding: 0.3rem;">
+                                        <option value="ROLE_GARDENER" th:selected="${user.role.name() == 'ROLE_GARDENER'}">GARDENER</option>
+                                        <option value="ROLE_ADMIN" th:selected="${user.role.name() == 'ROLE_ADMIN'}">ADMIN</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+                                </form>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <form th:action="@{'/admin/users/' + ${user.id} + '/toggle-status'}" method="post">
+                                        <button type="submit" class="btn btn-sm" th:classappend="${user.active} ? 'btn-secondary' : 'btn-primary'" th:text="${user.active ? 'Deactivate' : 'Activate'}">Toggle</button>
+                                    </form>
+                                    <form th:action="@{'/admin/users/' + ${user.id} + '/delete'}" method="post" onsubmit="return confirm('Are you sure you want to permanently delete this user account?');">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

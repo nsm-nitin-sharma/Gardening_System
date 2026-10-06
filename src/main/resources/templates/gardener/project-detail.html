@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: header-head(${project.title})}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="main-wrapper">
+    <aside th:replace="~{fragments/layout :: gardener-sidebar('projects')}"></aside>
+
+    <main class="content-area">
+
+        <div style="margin-bottom: 1.5rem;">
+            <a th:href="@{/gardener/projects}" class="btn btn-secondary btn-sm">&larr; Back to All Projects</a>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
+
+        <!-- Project Overview Box -->
+        <div class="content-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <div>
+                    <h1 th:text="${project.title}">Project Title</h1>
+                    <p style="color: var(--neutral-600); font-size: 1.05rem; margin-top: 0.5rem;" th:text="${project.description}">Description</p>
+                </div>
+                <div>
+                    <form th:action="@{'/gardener/projects/' + ${project.id} + '/status'}" method="post" style="display: flex; gap: 0.5rem; align-items: center;">
+                        <select name="status" class="form-control" style="width: auto;">
+                            <option value="PLANNING" th:selected="${project.status.name() == 'PLANNING'}">PLANNING</option>
+                            <option value="IN_PROGRESS" th:selected="${project.status.name() == 'IN_PROGRESS'}">IN PROGRESS</option>
+                            <option value="HARVESTING" th:selected="${project.status.name() == 'HARVESTING'}">HARVESTING</option>
+                            <option value="COMPLETED" th:selected="${project.status.name() == 'COMPLETED'}">COMPLETED</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm">Update Status</button>
+                    </form>
+                </div>
+            </div>
+
+            <div style="background: var(--neutral-50); padding: 1.25rem; border-radius: var(--radius-md); display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; font-size: 0.92rem;">
+                <div><strong>Plant Types:</strong><br><span th:text="${project.plantTypes}">Plants</span></div>
+                <div><strong>Start Date:</strong><br><span th:text="${project.startDate}">Date</span></div>
+                <div><strong>Target Harvest:</strong><br><span th:text="${project.targetHarvestDate != null ? project.targetHarvestDate : 'Not specified'}">Harvest Date</span></div>
+            </div>
+        </div>
+
+        <!-- Project Progress Logs Section -->
+        <div class="content-card" style="margin-top: 2rem;">
+            <div class="card-header">
+                <h3>Project Milestone & Progress Logs</h3>
+            </div>
+
+            <!-- Add Log Entry Form -->
+            <form th:action="@{'/gardener/projects/' + ${project.id} + '/log'}" method="post" style="background: var(--neutral-50); padding: 1.25rem; border-radius: var(--radius-md); margin-bottom: 2rem;">
+                <h4 style="margin-bottom: 1rem;">Record New Progress Entry</h4>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Log Date</label>
+                        <input type="date" name="logDate" class="form-control" th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Milestone Title (Optional)</label>
+                        <input type="text" name="milestone" class="form-control" placeholder="e.g. First Sprouts Emerge / Harvested 5kg Tomatoes">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Observation Notes *</label>
+                    <textarea name="note" class="form-control" style="min-height: 90px;" placeholder="Note plant height, watering frequency, weather, pests, fertilizer applied..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">+ Add Log Entry</button>
+            </form>
+
+            <!-- Logs Timeline Table -->
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Milestone</th>
+                            <th>Observation Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="log : ${logs}">
+                            <td style="white-space: nowrap; font-weight: 600;" th:text="${log.logDate}">2026-04-01</td>
+                            <td>
+                                <span th:if="${log.milestone != null and !#strings.isEmpty(log.milestone)}" class="badge badge-completed" th:text="${log.milestone}">Milestone</span>
+                                <span th:if="${log.milestone == null or #strings.isEmpty(log.milestone)}" style="color: var(--neutral-400);">-</span>
+                            </td>
+                            <td style="white-space: pre-line;" th:text="${log.note}">Notes text</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(logs)}">
+                            <td colspan="3" style="text-align: center; color: var(--neutral-500); padding: 2rem;">
+                                No progress logs recorded for this project yet.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

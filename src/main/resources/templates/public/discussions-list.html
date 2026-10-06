@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: header-head('Discussions Forum')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="content-area" style="margin: 0 auto; width: 100%;">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h1>Gardening Community Discussions</h1>
+            <p style="color: var(--neutral-500);">Ask questions, trade advice, and discuss seasonal gardening topics</p>
+        </div>
+        <div sec:authorize="isAuthenticated()">
+            <a th:href="@{/gardener/discussions/new}" class="btn btn-primary">+ Start a New Discussion</a>
+        </div>
+    </div>
+
+    <!-- Category Filter Bar -->
+    <div class="content-card" style="margin-bottom: 2rem; padding: 1.25rem;">
+        <form th:action="@{/discussions}" method="get" style="display: flex; gap: 1rem; align-items: center;">
+            <select name="category" class="form-control" style="width: 280px;">
+                <option value="">All Topics</option>
+                <option value="Pest Management" th:selected="${selectedCategory == 'Pest Management'}">Pest Management</option>
+                <option value="Plant Diseases" th:selected="${selectedCategory == 'Plant Diseases'}">Plant Diseases</option>
+                <option value="Composting & Soil" th:selected="${selectedCategory == 'Composting & Soil'}">Composting & Soil</option>
+                <option value="Hydroponics & Indoor" th:selected="${selectedCategory == 'Hydroponics & Indoor'}">Hydroponics & Indoor</option>
+                <option value="General Gardening" th:selected="${selectedCategory == 'General Gardening'}">General Gardening</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a th:href="@{/discussions}" class="btn btn-secondary">Reset</a>
+        </form>
+    </div>
+
+    <!-- Discussions List -->
+    <div class="content-card">
+        <div th:each="topic : ${topics}" style="padding: 1.25rem 0; border-bottom: 1px solid var(--neutral-200); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <span class="badge badge-harvesting" th:text="${topic.category}" style="margin-bottom: 0.4rem;">Category</span>
+                <a th:href="@{'/discussions/view/' + ${topic.id}}" style="font-size: 1.15rem; font-weight: 600; color: var(--neutral-900); display: block;" th:text="${topic.title}">Discussion Title</a>
+                <div style="color: var(--neutral-500); font-size: 0.88rem; margin-top: 0.35rem;" th:text="'Started by ' + ${topic.author.fullName} + ' • ' + ${#temporals.format(topic.createdAt, 'MMM dd, yyyy')} + ' • ' + ${#lists.size(topic.comments)} + ' Responses'">Metadata</div>
+            </div>
+            <a th:href="@{'/discussions/view/' + ${topic.id}}" class="btn btn-secondary btn-sm">View Discussion</a>
+        </div>
+        <div th:if="${#lists.isEmpty(topics)}" style="text-align: center; padding: 2.5rem; color: var(--neutral-500);">
+            No community discussion topics found in this category. Be the first to start a topic!
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

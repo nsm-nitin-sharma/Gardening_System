@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: header-head('Profile Management')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="main-wrapper">
+    <aside th:replace="~{fragments/layout :: gardener-sidebar('profile')}"></aside>
+
+    <main class="content-area" style="max-width: 800px;">
+        <div style="margin-bottom: 2rem;">
+            <h1>Profile Management</h1>
+            <p style="color: var(--neutral-500);">Update your personal gardener profile details and public preferences</p>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
+
+        <div class="content-card">
+            <form th:action="@{/gardener/profile/update}" method="post">
+                <div class="form-group">
+                    <label class="form-label">Email Address (Read-only)</label>
+                    <input type="email" class="form-control" th:value="${user.email}" disabled style="background: var(--neutral-100);">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="fullName">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" class="form-control" th:value="${user.fullName}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="gardeningExperience">Gardening Experience Level</label>
+                    <select id="gardeningExperience" name="gardeningExperience" class="form-control">
+                        <option value="Beginner (0-1 yrs)" th:selected="${user.gardeningExperience == 'Beginner (0-1 yrs)'}">Beginner (0-1 yrs)</option>
+                        <option value="Intermediate (2-5 yrs)" th:selected="${user.gardeningExperience == 'Intermediate (2-5 yrs)'}">Intermediate (2-5 yrs)</option>
+                        <option value="Advanced (5+ yrs)" th:selected="${user.gardeningExperience == 'Advanced (5+ yrs)'}">Advanced (5+ yrs)</option>
+                        <option value="Master Gardener" th:selected="${user.gardeningExperience == 'Master Gardener'}">Master Gardener</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="location">Location / Growing Zone</label>
+                    <input type="text" id="location" name="location" class="form-control" th:value="${user.location}">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="bio">Gardener Bio & Interests</label>
+                    <textarea id="bio" name="bio" class="form-control" th:text="${user.bio}"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+            </form>
+        </div>
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

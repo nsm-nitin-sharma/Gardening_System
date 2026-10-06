@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: header-head('Gardener Dashboard')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="main-wrapper">
+    <aside th:replace="~{fragments/layout :: gardener-sidebar('dashboard')}"></aside>
+
+    <main class="content-area">
+        <div style="margin-bottom: 2rem;">
+            <h1 th:text="'Welcome back, ' + ${user.fullName} + '!'">Welcome</h1>
+            <p style="color: var(--neutral-500);">Overview of your personal gardening projects and shared community tips</p>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
+
+        <!-- Metric Cards -->
+        <div class="card-grid">
+            <div class="metric-card">
+                <div>
+                    <div class="metric-title">Active Projects</div>
+                    <div class="metric-value" th:text="${projectsCount}">0</div>
+                </div>
+                <div class="metric-icon">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div>
+                    <div class="metric-title">Shared Gardening Tips</div>
+                    <div class="metric-value" th:text="${tipsCount}">0</div>
+                </div>
+                <div class="metric-icon info">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gardening Projects Section -->
+        <div class="content-card">
+            <div class="card-header">
+                <h3>My Gardening Projects</h3>
+                <a th:href="@{/gardener/projects/new}" class="btn btn-primary btn-sm">+ Create Project</a>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Project Title</th>
+                            <th>Plants Included</th>
+                            <th>Status</th>
+                            <th>Start Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="project : ${recentProjects}">
+                            <td style="font-weight: 600;" th:text="${project.title}">Title</td>
+                            <td th:text="${project.plantTypes}">Plants</td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="'badge-' + ${#strings.toLowerCase(project.status)}"
+                                      th:text="${project.status}">PLANNING</span>
+                            </td>
+                            <td th:text="${project.startDate}">2026-04-01</td>
+                            <td>
+                                <a th:href="@{'/gardener/projects/view/' + ${project.id}}" class="btn btn-secondary btn-sm">Manage Logs</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(recentProjects)}">
+                            <td colspan="5" style="text-align: center; color: var(--neutral-500); padding: 2rem;">
+                                No gardening projects created yet. <a th:href="@{/gardener/projects/new}">Start your first project!</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- My Recent Tips Section -->
+        <div class="content-card">
+            <div class="card-header">
+                <h3>My Shared Gardening Tips</h3>
+                <a th:href="@{/gardener/tips/submit}" class="btn btn-primary btn-sm">+ Share New Tip</a>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Submitted Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="tip : ${recentTips}">
+                            <td style="font-weight: 600;" th:text="${tip.title}">Title</td>
+                            <td th:text="${tip.category}">Category</td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="'badge-' + ${#strings.toLowerCase(tip.status)}"
+                                      th:text="${tip.status}">APPROVED</span>
+                            </td>
+                            <td th:text="${#temporals.format(tip.createdAt, 'MMM dd, yyyy')}">Date</td>
+                            <td>
+                                <a th:href="@{'/tips/view/' + ${tip.id}}" class="btn btn-secondary btn-sm">View</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(recentTips)}">
+                            <td colspan="5" style="text-align: center; color: var(--neutral-500); padding: 2rem;">
+                                You haven't shared any gardening tips yet.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

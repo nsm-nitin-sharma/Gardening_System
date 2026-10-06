@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: header-head('Register Account')}"></head>
+<body style="background: var(--neutral-100);">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 160px); padding: 2.5rem 1rem;">
+    <div class="content-card" style="width: 100%; max-width: 540px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);">
+        <h2 style="text-align: center; margin-bottom: 0.5rem;">Join the Community</h2>
+        <p style="text-align: center; color: var(--neutral-500); font-size: 0.9rem; margin-bottom: 1.75rem;">Create your gardener account to share tips and track garden projects</p>
+
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}">Error</div>
+
+        <form th:action="@{/register}" th:object="${registrationDto}" method="post">
+            <div class="form-group">
+                <label class="form-label" for="fullName">Full Name *</label>
+                <input type="text" th:field="*{fullName}" id="fullName" class="form-control" placeholder="e.g. Eleanor Vance" required>
+                <small th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" style="color: var(--status-danger);"></small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="email">Email Address *</label>
+                <input type="email" th:field="*{email}" id="email" class="form-control" placeholder="eleanor@example.com" required>
+                <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color: var(--status-danger);"></small>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label" for="password">Password *</label>
+                    <input type="password" th:field="*{password}" id="password" class="form-control" placeholder="At least 6 chars" required>
+                    <small th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: var(--status-danger);"></small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirmPassword">Confirm Password *</label>
+                    <input type="password" th:field="*{confirmPassword}" id="confirmPassword" class="form-control" placeholder="Confirm password" required>
+                    <small th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" style="color: var(--status-danger);"></small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="gardeningExperience">Gardening Experience Level</label>
+                <select th:field="*{gardeningExperience}" id="gardeningExperience" class="form-control">
+                    <option value="Beginner (0-1 yrs)">Beginner (0-1 yrs)</option>
+                    <option value="Intermediate (2-5 yrs)">Intermediate (2-5 yrs)</option>
+                    <option value="Advanced (5+ yrs)">Advanced (5+ yrs)</option>
+                    <option value="Master Gardener">Master Gardener</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="location">Location / Climate Zone</label>
+                <input type="text" th:field="*{location}" id="location" class="form-control" placeholder="e.g. Seattle, WA (Zone 8b)">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="bio">Bio & Gardening Interests</label>
+                <textarea th:field="*{bio}" id="bio" class="form-control" placeholder="Tell the community about what you love growing..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 1rem;">Complete Registration</button>
+        </form>
+
+        <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--neutral-200); text-align: center; font-size: 0.88rem; color: var(--neutral-600);">
+            Already have an account? <a th:href="@{/login}" style="font-weight: 600;">Sign In Here</a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

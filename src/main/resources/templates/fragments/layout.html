@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="header-head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - Online Gardening Community Platform'">Online Gardening Community</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Global Header Navigation -->
+<nav th:fragment="navbar" class="navbar">
+    <a th:href="@{/}" class="navbar-brand">
+        <svg viewBox="0 0 24 24" width="28" height="28">
+            <path fill="currentColor" d="M12 3C6.5 3 2 6.5 2 12c0 3.5 2 6.5 5 8.2V21c0 .6.4 1 1 1h8c.6 0 1-.4 1-1v-.8c3-1.7 5-4.7 5-8.2 0-5.5-4.5-9-10-9zm-1 15v-3h2v3h-2zm4.7-2.3c-.6.3-1.1.5-1.7.7v-2.4c1.2-.5 2-1.7 2-3 0-1.8-1.5-3.3-3.3-3.3-1.2 0-2.3.7-2.8 1.8-.4-.3-.9-.5-1.4-.5-1.4 0-2.5 1.1-2.5 2.5 0 1 .6 1.9 1.5 2.3v2.6c-.6-.2-1.1-.4-1.7-.7-2.1-1.3-3.3-3.5-3.3-6.1 0-4.4 3.6-7 8-7s8 2.6 8 7c0 2.6-1.2 4.8-3.3 6.1z"/>
+        </svg>
+        Gardening Hub
+    </a>
+
+    <ul class="nav-links">
+        <li><a th:href="@{/}" class="nav-link">Home</a></li>
+        <li><a th:href="@{/tips}" class="nav-link">Gardening Tips</a></li>
+        <li><a th:href="@{/discussions}" class="nav-link">Discussions</a></li>
+
+        <li sec:authorize="isAuthenticated()">
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}" class="nav-link">Admin Portal</a>
+            <a sec:authorize="hasRole('GARDENER')" th:href="@{/gardener/dashboard}" class="nav-link">Gardener Portal</a>
+        </li>
+    </ul>
+
+    <div class="user-pill">
+        <div sec:authorize="isAnonymous()">
+            <a th:href="@{/login}" class="btn btn-primary btn-sm">Sign In</a>
+            <a th:href="@{/register}" class="btn btn-secondary btn-sm">Register</a>
+        </div>
+        <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center; gap: 0.75rem;">
+            <span sec:authentication="name" style="font-weight: 600;">User</span>
+            <span sec:authorize="hasRole('ADMIN')" class="role-tag admin">ADMIN</span>
+            <span sec:authorize="hasRole('GARDENER')" class="role-tag">GARDENER</span>
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<!-- Sidebar fragment for Gardener -->
+<aside th:fragment="gardener-sidebar(activePage)" class="sidebar">
+    <div class="sidebar-title">Gardener Dashboard</div>
+    <a th:href="@{/gardener/dashboard}" th:classappend="${activePage == 'dashboard'} ? 'active'" class="sidebar-link">
+        Dashboard Overview
+    </a>
+    <a th:href="@{/gardener/profile}" th:classappend="${activePage == 'profile'} ? 'active'" class="sidebar-link">
+        Profile Management
+    </a>
+    <a th:href="@{/gardener/projects}" th:classappend="${activePage == 'projects'} ? 'active'" class="sidebar-link">
+        Gardening Projects
+    </a>
+    <a th:href="@{/gardener/tips/submit}" th:classappend="${activePage == 'submit-tip'} ? 'active'" class="sidebar-link">
+        Share a Tip
+    </a>
+    <a th:href="@{/gardener/tips/my-tips}" th:classappend="${activePage == 'my-tips'} ? 'active'" class="sidebar-link">
+        My Shared Tips
+    </a>
+    <a th:href="@{/discussions}" th:classappend="${activePage == 'discussions'} ? 'active'" class="sidebar-link">
+        Community Forum
+    </a>
+</aside>
+
+<!-- Sidebar fragment for Admin -->
+<aside th:fragment="admin-sidebar(activePage)" class="sidebar">
+    <div class="sidebar-title">Admin Management</div>
+    <a th:href="@{/admin/dashboard}" th:classappend="${activePage == 'dashboard'} ? 'active'" class="sidebar-link">
+        Admin Overview
+    </a>
+    <a th:href="@{/admin/users}" th:classappend="${activePage == 'users'} ? 'active'" class="sidebar-link">
+        User Accounts
+    </a>
+    <a th:href="@{/admin/moderation}" th:classappend="${activePage == 'moderation'} ? 'active'" class="sidebar-link">
+        Content Moderation
+    </a>
+    <a th:href="@{/admin/settings}" th:classappend="${activePage == 'settings'} ? 'active'" class="sidebar-link">
+        System Settings
+    </a>
+    <a th:href="@{/admin/activities}" th:classappend="${activePage == 'activities'} ? 'active'" class="sidebar-link">
+        Activity Monitoring
+    </a>
+</aside>
+
+<!-- Global Footer -->
+<footer th:fragment="footer">
+    <p>&copy; 2026 Online Gardening Community Platform. Academic Project Submission - Clean Java Architecture.</p>
+</footer>
+
+</body>
+</html>

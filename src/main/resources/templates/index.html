@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: header-head('Home')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div th:if="${announcement != null and !#strings.isEmpty(announcement)}" class="announcement-bar">
+    <span th:text="${announcement}">Welcome Announcement</span>
+</div>
+
+<main style="padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; width: 100%;">
+
+    <!-- Hero Section -->
+    <div style="background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%); color: white; padding: 3.5rem 2.5rem; border-radius: var(--radius-lg); margin-bottom: 3rem; text-align: center; box-shadow: var(--shadow-lg);">
+        <h1 style="color: white; font-size: 2.75rem; margin-bottom: 1rem;" th:text="${siteName}">Online Gardening Community</h1>
+        <p style="font-size: 1.15rem; max-width: 750px; margin: 0 auto 2rem auto; color: #d8f3dc; font-weight: 400;">
+            Connect with passionate gardeners, share expert plant care tips, join active community discussions, and track your personal gardening projects from seed to harvest.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a th:href="@{/register}" class="btn" style="background: #52b788; color: #081c15; padding: 0.75rem 1.75rem; font-size: 1rem;">Join Community Free</a>
+            <a th:href="@{/tips}" class="btn" style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.75rem 1.75rem; font-size: 1rem;">Explore Gardening Tips</a>
+        </div>
+    </div>
+
+    <!-- Featured Gardening Tips Grid -->
+    <div style="margin-bottom: 3rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2>Latest Gardening Tips</h2>
+            <a th:href="@{/tips}" class="btn btn-secondary btn-sm">View All Tips &rarr;</a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+            <div th:each="tip : ${recentTips}" class="content-card" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <img th:if="${tip.imageUrl != null and !#strings.isEmpty(tip.imageUrl)}" th:src="${tip.imageUrl}" style="width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 1rem;" alt="Tip photo">
+                    <span class="badge badge-planning" th:text="${tip.category}" style="margin-bottom: 0.5rem;">Category</span>
+                    <h3 style="margin: 0.5rem 0 0.75rem 0;" th:text="${tip.title}">Tip Title</h3>
+                    <p style="color: var(--neutral-600); font-size: 0.92rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;" th:text="${tip.description}">Description preview</p>
+                </div>
+                <div style="margin-top: 1.25rem; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); display: flex; justify-content: space-between; align-items: center;">
+                    <small style="color: var(--neutral-500);" th:text="'By ' + ${tip.author.fullName}">Author</small>
+                    <a th:href="@{'/tips/view/' + ${tip.id}}" class="btn btn-primary btn-sm">Read Tip</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Community Discussions -->
+    <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2>Community Discussions</h2>
+            <a th:href="@{/discussions}" class="btn btn-secondary btn-sm">Join Discussions &rarr;</a>
+        </div>
+
+        <div class="content-card">
+            <div th:each="topic : ${recentDiscussions}" style="padding: 1rem 0; border-bottom: 1px solid var(--neutral-200); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span class="badge badge-harvesting" th:text="${topic.category}" style="margin-right: 0.5rem;">Category</span>
+                    <a th:href="@{'/discussions/view/' + ${topic.id}}" style="font-weight: 600; font-size: 1.05rem; color: var(--neutral-900);" th:text="${topic.title}">Discussion Topic</a>
+                    <div style="color: var(--neutral-500); font-size: 0.85rem; margin-top: 0.25rem;" th:text="'Posted by ' + ${topic.author.fullName} + ' • ' + ${#lists.size(topic.comments)} + ' Replies'">Stats</div>
+                </div>
+                <a th:href="@{'/discussions/view/' + ${topic.id}}" class="btn btn-secondary btn-sm">View Discussion</a>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

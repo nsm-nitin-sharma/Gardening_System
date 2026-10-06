@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: header-head('New Gardening Project')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="main-wrapper">
+    <aside th:replace="~{fragments/layout :: gardener-sidebar('projects')}"></aside>
+
+    <main class="content-area" style="max-width: 800px;">
+        <div style="margin-bottom: 2rem;">
+            <h1>Create Gardening Project</h1>
+            <p style="color: var(--neutral-500);">Setup a new tracking board for your outdoor garden beds, pots, or greenhouse</p>
+        </div>
+
+        <div class="content-card">
+            <form th:action="@{/gardener/projects/save}" method="post">
+                <div class="form-group">
+                    <label class="form-label" for="title">Project Title *</label>
+                    <input type="text" id="title" name="title" class="form-control" placeholder="e.g. Backyard Heirloom Tomato Patch" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="description">Project Objectives & Plan *</label>
+                    <textarea id="description" name="description" class="form-control" placeholder="Describe the layout, sunlight exposure, soil type, and goals..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="plantTypes">Plant Types / Varieties *</label>
+                    <input type="text" id="plantTypes" name="plantTypes" class="form-control" placeholder="e.g. Cherokee Purple Tomato, Sweet Genovese Basil, French Breakfast Radish" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="status">Initial Project Status *</label>
+                    <select id="status" name="status" class="form-control" required>
+                        <option value="PLANNING">PLANNING</option>
+                        <option value="IN_PROGRESS" selected>IN PROGRESS</option>
+                        <option value="HARVESTING">HARVESTING</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="startDate">Start Date</label>
+                        <input type="date" id="startDate" name="startDate" class="form-control" th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="targetHarvestDate">Target Harvest Date (Optional)</label>
+                        <input type="date" id="targetHarvestDate" name="targetHarvestDate" class="form-control">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Create Gardening Project</button>
+            </form>
+        </div>
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

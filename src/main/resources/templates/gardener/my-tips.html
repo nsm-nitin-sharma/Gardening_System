@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: header-head('My Shared Tips')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="main-wrapper">
+    <aside th:replace="~{fragments/layout :: gardener-sidebar('my-tips')}"></aside>
+
+    <main class="content-area">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+                <h1>My Shared Tips</h1>
+                <p style="color: var(--neutral-500);">Track the moderation approval status of your submitted gardening tips</p>
+            </div>
+            <a th:href="@{/gardener/tips/submit}" class="btn btn-primary">+ Share New Tip</a>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
+
+        <div class="content-card">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Tip Title</th>
+                            <th>Category</th>
+                            <th>Moderation Status</th>
+                            <th>Submitted Date</th>
+                            <th>Moderation Note</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="tip : ${tips}">
+                            <td style="font-weight: 600;" th:text="${tip.title}">Title</td>
+                            <td th:text="${tip.category}">Category</td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="'badge-' + ${#strings.toLowerCase(tip.status)}"
+                                      th:text="${tip.status}">APPROVED</span>
+                            </td>
+                            <td th:text="${#temporals.format(tip.createdAt, 'MMM dd, yyyy')}">Date</td>
+                            <td th:text="${tip.moderationNote != null ? tip.moderationNote : 'None'}">Note</td>
+                            <td>
+                                <a th:href="@{'/tips/view/' + ${tip.id}}" class="btn btn-secondary btn-sm">Preview</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(tips)}">
+                            <td colspan="6" style="text-align: center; color: var(--neutral-500); padding: 2.5rem;">
+                                You have not submitted any gardening tips yet.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

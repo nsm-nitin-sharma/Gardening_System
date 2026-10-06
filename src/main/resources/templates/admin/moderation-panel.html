@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: header-head('Content Moderation')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="main-wrapper">
+    <aside th:replace="~{fragments/layout :: admin-sidebar('moderation')}"></aside>
+
+    <main class="content-area">
+        <div style="margin-bottom: 2rem;">
+            <h1>Content Moderation Panel</h1>
+            <p style="color: var(--neutral-500);">Review pending user-submitted gardening tips before public release</p>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
+
+        <div th:each="tip : ${pendingTips}" class="content-card" style="margin-bottom: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <div>
+                    <span class="badge badge-planning" th:text="${tip.category}" style="margin-bottom: 0.5rem;">Category</span>
+                    <h2 th:text="${tip.title}" style="margin-top: 0.3rem;">Tip Title</h2>
+                    <div style="color: var(--neutral-500); font-size: 0.88rem; margin-top: 0.25rem;" th:text="'Submitted by ' + ${tip.author.fullName} + ' (' + ${tip.author.email} + ') on ' + ${#temporals.format(tip.createdAt, 'MMMM dd, yyyy HH:mm')}">Meta</div>
+                </div>
+                <span class="badge badge-pending">PENDING APPROVAL</span>
+            </div>
+
+            <img th:if="${tip.imageUrl != null and !#strings.isEmpty(tip.imageUrl)}" th:src="${tip.imageUrl}" style="max-height: 250px; width: 100%; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 1.25rem;" alt="Submitted photo">
+
+            <div style="background: var(--neutral-50); padding: 1.25rem; border-radius: var(--radius-md); font-size: 0.98rem; line-height: 1.7; margin-bottom: 1.5rem; white-space: pre-line;" th:text="${tip.description}">
+                Tip Content Description
+            </div>
+
+            <!-- Moderation Action Form -->
+            <form th:action="@{'/admin/moderation/tip/' + ${tip.id}}" method="post" style="border-top: 1px solid var(--neutral-200); padding-top: 1.25rem;">
+                <div class="form-group">
+                    <label class="form-label">Moderation Note / Feedback Reason</label>
+                    <input type="text" name="moderationNote" class="form-control" placeholder="e.g. Approved - Great organic gardening practice / Rejected - Duplicate topic">
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" name="status" value="APPROVED" class="btn btn-primary">Approve Content</button>
+                    <button type="submit" name="status" value="REJECTED" class="btn btn-danger">Reject Content</button>
+                </div>
+            </form>
+        </div>
+
+        <div th:if="${#lists.isEmpty(pendingTips)}" class="content-card" style="text-align: center; padding: 3rem; color: var(--neutral-500);">
+            <h3>All Caught Up!</h3>
+            <p style="margin-top: 0.5rem;">No user tips are currently awaiting moderation approval.</p>
+        </div>
+
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

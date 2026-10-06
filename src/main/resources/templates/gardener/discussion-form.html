@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: header-head('Start Discussion Topic')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="main-wrapper">
+    <aside th:replace="~{fragments/layout :: gardener-sidebar('discussions')}"></aside>
+
+    <main class="content-area" style="max-width: 800px;">
+        <div style="margin-bottom: 2rem;">
+            <h1>Start Discussion Topic</h1>
+            <p style="color: var(--neutral-500);">Ask a question or start a topic for community advice and discussion</p>
+        </div>
+
+        <div class="content-card">
+            <form th:action="@{/gardener/discussions/save}" method="post">
+                <div class="form-group">
+                    <label class="form-label" for="title">Topic Title *</label>
+                    <input type="text" id="title" name="title" class="form-control" placeholder="e.g. Best organic remedies for aphids on chili peppers?" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="category">Category *</label>
+                    <select id="category" name="category" class="form-control" required>
+                        <option value="Pest Management">Pest Management</option>
+                        <option value="Plant Diseases">Plant Diseases</option>
+                        <option value="Composting & Soil">Composting & Soil</option>
+                        <option value="Hydroponics & Indoor">Hydroponics & Indoor</option>
+                        <option value="General Gardening">General Gardening</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="content">Detailed Question / Discussion Content *</label>
+                    <textarea id="content" name="content" class="form-control" style="min-height: 160px;" placeholder="Provide details, growing conditions, symptoms, or context..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Post Discussion Topic</button>
+            </form>
+        </div>
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
