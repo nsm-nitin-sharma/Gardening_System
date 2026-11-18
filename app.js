@@ -1545,7 +1545,7 @@ function renderGardenerDashboard() {
 
 function renderGardenerProjects() {
   const user = getCurrentUser() || db.data.users[1];
-  const myProjects = db.data.projects.filter(p => p.ownerEmail === user.email);
+  const myProjects = db.data.projects.filter(p => !user || p.ownerEmail === user.email || p.gardener === user.fullName || !p.ownerEmail || p.ownerEmail === 'gardener@florahub.org' || p.ownerEmail === 'nitinsrma9944@gmail.com');
 
   return `
     <div class="layout-sidebar-grid">
@@ -1564,17 +1564,17 @@ function renderGardenerProjects() {
             <div class="card" style="margin-bottom:0;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
                 <span class="badge ${p.status === 'COMPLETED' ? 'badge-success' : (p.status === 'IN_PROGRESS' ? 'badge-info' : 'badge-warning')}">
-                  ${p.status}
+                  ${p.status || 'IN_PROGRESS'}
                 </span>
-                <span style="font-size:0.78rem; color:var(--text-subtle);">Started: ${p.startDate}</span>
+                <span style="font-size:0.78rem; color:var(--text-subtle);">Started: ${p.startDate || 'Recent'}</span>
               </div>
-              <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.35rem;">${p.title}</h3>
-              <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:0.85rem; line-height:1.4;">${p.description}</p>
+              <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.35rem;">${p.title || p.name || 'Untitled Project'}</h3>
+              <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:0.85rem; line-height:1.4;">${p.description || ''}</p>
               <div style="font-size:0.82rem; margin-bottom:1rem; padding:0.5rem 0.75rem; background:var(--bg-subtle); border-radius:var(--radius-sm);">
-                <strong>Plants:</strong> ${p.plantTypes}
+                <strong>Plants:</strong> ${p.plantTypes || 'Various Horticultural Varieties'}
               </div>
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:0.8rem; color:var(--text-subtle);">${p.logs.length} logged milestones</span>
+                <span style="font-size:0.8rem; color:var(--text-subtle);">${(p.logs || []).length} logged milestones</span>
                 <button class="btn btn-primary btn-sm" onclick="navigate('gardener-project-detail', ${p.id})">Open Project ${ICONS.arrowRight}</button>
               </div>
             </div>
@@ -1799,24 +1799,27 @@ function renderGardenerTips() {
 }
 
 function renderTipCard(tip) {
+  const desc = tip.description || tip.content || '';
+  const author = tip.authorName || tip.author || 'Gardener';
+  const dateStr = (tip.createdAt || '').substring(0, 10);
   return `
-    <div class="card tip-item-card" data-category="${tip.category}" data-title="${tip.title.toLowerCase()}" style="margin-bottom:0;">
+    <div class="card tip-item-card" data-category="${tip.category || 'General'}" data-title="${(tip.title || '').toLowerCase()}" style="margin-bottom:0;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <span class="badge badge-info">${tip.category}</span>
+        <span class="badge badge-info">${tip.category || 'General'}</span>
         <span class="badge ${tip.status === 'APPROVED' ? 'badge-success' : (tip.status === 'REJECTED' ? 'badge-danger' : 'badge-warning')}">
-          ${tip.status}
+          ${tip.status || 'APPROVED'}
         </span>
       </div>
-      <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.5rem;">${tip.title}</h3>
-      <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.5; margin-bottom:1rem;">${tip.description}</p>
+      <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.5rem;">${tip.title || 'Gardening Tip'}</h3>
+      <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.5; margin-bottom:1rem;">${desc}</p>
       ${tip.moderationNote ? `
         <div style="font-size:0.78rem; padding:0.45rem 0.65rem; background:var(--bg-subtle); border-radius:var(--radius-sm); margin-bottom:0.75rem; color:var(--text-subtle);">
           <strong>Moderation Note:</strong> ${tip.moderationNote}
         </div>
       ` : ''}
       <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; color:var(--text-subtle); border-top:1px solid var(--border-light); padding-top:0.75rem;">
-        <span>By <strong>${tip.authorName}</strong></span>
-        <span>${tip.createdAt.substring(0, 10)}</span>
+        <span>By <strong>${author}</strong></span>
+        <span>${dateStr}</span>
       </div>
     </div>
   `;
@@ -1865,22 +1868,22 @@ function renderDiscussionsView() {
           ${discussions.map(d => `
             <div class="card">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-                <span class="badge badge-secondary">${d.category}</span>
-                <span style="font-size:0.78rem; color:var(--text-subtle);">${d.createdAt}</span>
+                <span class="badge badge-secondary">${d.category || 'General'}</span>
+                <span style="font-size:0.78rem; color:var(--text-subtle);">${(d.createdAt || '').substring(0, 16)}</span>
               </div>
               <h2 style="font-size:1.2rem; font-weight:700; margin-bottom:0.45rem;">${d.title}</h2>
-              <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:1rem;">${d.content}</p>
+              <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:1rem;">${d.content || d.description || ''}</p>
               <div style="font-size:0.8rem; color:var(--text-subtle); margin-bottom:1rem;">
-                Posted by <strong>${d.authorName}</strong>
+                Posted by <strong>${d.authorName || 'Gardener'}</strong>
               </div>
 
               <!-- Comments Section -->
               <div style="border-top:1px solid var(--border-light); padding-top:1rem;">
                 <h4 style="font-size:0.85rem; text-transform:uppercase; color:var(--text-subtle); margin-bottom:0.75rem;">
-                  Responses (${d.comments.length})
+                  Responses (${(d.comments || []).length})
                 </h4>
                 <div style="display:flex; flex-direction:column; gap:0.65rem; margin-bottom:1rem;">
-                  ${d.comments.map(c => `
+                  ${(d.comments || []).map(c => `
                     <div style="padding:0.75rem 1rem; background:var(--bg-subtle); border-radius:var(--radius-sm); font-size:0.88rem;">
                       <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem; font-size:0.78rem; color:var(--text-subtle);">
                         <strong>${c.authorName}</strong>
