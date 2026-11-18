@@ -1128,16 +1128,16 @@ function updateNavState(currentView) {
   if (authSlot) {
     if (user) {
       authSlot.innerHTML = `
-        <div style="display:flex; align-items:center; gap:0.65rem;">
-          <span style="font-size:0.85rem; font-weight:600;">${user.fullName}</span>
-          <span class="badge ${user.role === 'ADMIN' ? 'badge-danger' : 'badge-success'}">${user.role}</span>
-          <button class="btn btn-secondary btn-sm" onclick="logoutUser()">Logout</button>
+        <div class="user-nav-pill">
+          <span class="user-nav-name" title="${user.fullName}">${user.fullName}</span>
+          <span class="badge ${user.role === 'ADMIN' ? 'badge-danger' : 'badge-success'}" style="white-space:nowrap;">${user.role}</span>
+          <button class="btn btn-secondary btn-sm logout-btn" style="white-space:nowrap;" onclick="logoutUser()">Logout</button>
         </div>
       `;
     } else {
       authSlot.innerHTML = `
-        <button class="btn btn-secondary btn-sm" onclick="navigate('login')">Sign In</button>
-        <button class="btn btn-primary btn-sm" onclick="navigate('register')">Register</button>
+        <button class="btn btn-secondary btn-sm" style="white-space:nowrap;" onclick="navigate('login')">Sign In</button>
+        <button class="btn btn-primary btn-sm" style="white-space:nowrap;" onclick="navigate('register')">Register</button>
       `;
     }
   }
