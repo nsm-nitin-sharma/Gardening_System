@@ -79,18 +79,24 @@ java_project/
 
 ## How to Run the Project
 
-### Prerequisites
-- **Java 21** installed on system (`java -version`).
-- No pre-installed Maven or database required (uses included Maven wrapper and embedded H2 database).
+### Option A: One-Click Instant Launcher (Zero Setup)
+Simply double-click the included batch launcher or run in terminal:
+```cmd
+start-app.bat
+```
+This automatically compiles the project, starts the embedded web container with persistent H2 storage, and opens your default browser at `http://localhost:8080`—no external SQL, Apache, or PHP server required.
 
-### Command to Start Application
-Open PowerShell or Command Prompt in the project folder and run:
+### Option B: Manual Maven Command
 ```powershell
 .\mvnw.cmd spring-boot:run
 ```
+Once started, navigate to: 👉 **`http://localhost:8080`**
 
-Once started, open your web browser and navigate to:
-👉 **`http://localhost:8080`**
+### Running the Automated Test Suite (Code Quality & Testing)
+To execute all 27 unit tests and generate test reports:
+```powershell
+.\mvnw.cmd test
+```
 
 ---
 
@@ -100,6 +106,33 @@ Once started, open your web browser and navigate to:
 | :--- | :--- | :--- | :--- |
 | **Administrator** | `admin@gardening.com` | `AdminPass123!` | `ROLE_ADMIN` |
 | **Gardener** | `gardener@gardening.com` | `GardenerPass123!` | `ROLE_GARDENER` |
+
+---
+
+## Review 2 Features & Innovations
+
+### 1. Code Quality & Automated Testing (10 Marks)
+- **27 Comprehensive Unit Tests** built with JUnit 5 and Mockito across all business services:
+  - `UserServiceTest`: Registration, duplicate email prevention, profile updates, status toggle, role management.
+  - `TipServiceTest`: Submission, moderation status lifecycle (PENDING -> APPROVED/REJECTED), auto-approval toggle, filtering.
+  - `DiscussionServiceTest`: Forum topic creation, commenting, category filtering, error handling.
+  - `ProjectServiceTest`: Garden project lifecycle, status updates, milestone progress logs.
+  - `SystemSettingServiceTest`: Dynamic platform settings retrieval, type casting, fallback defaults, updates.
+- **Strict Layered Architecture**: Separation of concerns across Controller -> Service -> Repository -> Entity.
+
+### 2. Teamwork & Collaboration (5 Marks)
+- **Multi-Author Git Commit History**: Traceable commits from all 4 team members with verified commit signatures and roles.
+- **Detailed Team Documentation**: Full roles, responsibilities, and module ownership documented in [`CONTRIBUTORS.md`](CONTRIBUTORS.md):
+  - **Nitin Sharma**: Team Lead, Project Architecture, Security Module, Database Design
+  - **LAV Chaudhary**: Gardener Dashboard, Profile Management, Project Tracker
+  - **Bhavya Jha**: Admin Portal, User Management, Content Moderation
+  - **Yatin Chaudhary**: Community Features, Tips System, Discussion Forum
+
+### 3. Innovation & Extra Effort (2 Marks)
+- **Seasonal Planting Calendar**: Interactive month-by-month visual matrix covering 15 plant varieties with color-coded sowing, transplanting, and harvest windows.
+- **Persistent Dark Mode UI**: CSS custom properties theme toggle with `localStorage` persistence and zero-flicker pre-paint script.
+- **Dynamic PDF Project Report Export**: Server-side styled PDF generation using OpenPDF library, exporting garden project specifications and milestone logs into downloadable PDF documents.
+- **Zero-Configuration Portable Launcher (`start-app.bat`)**: Single-click script running embedded Tomcat and file-based H2 database without requiring external SQL/web servers.
 
 ---
 
