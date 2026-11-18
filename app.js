@@ -1188,14 +1188,20 @@ function renderLoginView() {
 
         <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-light); text-align: center;">
           <span style="font-size: 0.82rem; color: var(--text-subtle); display: block; margin-bottom: 0.65rem;">
-            Quick Evaluation Demo Logins (Click to autofill):
+            Quick Evaluation Demo Logins (Instant Access):
           </span>
-          <div style="display: flex; gap: 0.5rem; justify-content: center;">
-            <button class="btn btn-secondary btn-sm" onclick="quickFillLogin('admin@gardening.com', 'AdminPass123!')">
-              Admin Demo
+          <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="quickFillLogin('admin@gardening.com', 'AdminPass123!')">
+              Admin Fill
             </button>
-            <button class="btn btn-secondary btn-sm" onclick="quickFillLogin('gardener@gardening.com', 'GardenerPass123!')">
-              Gardener Demo
+            <button type="button" class="btn btn-secondary btn-sm" onclick="quickFillLogin('gardener@gardening.com', 'GardenerPass123!')">
+              Gardener Fill
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="quickLogin('gardener@gardening.com', 'GardenerPass123!')">
+              1-Click Gardener
+            </button>
+            <button type="button" class="btn btn-danger btn-sm" onclick="quickLogin('admin@gardening.com', 'AdminPass123!')">
+              1-Click Admin
             </button>
           </div>
         </div>
@@ -1215,22 +1221,19 @@ function handleLoginSubmit(e) {
   const res = loginUser(email, pass);
 
   if (res.success) {
+    showToast(`Welcome back, ${res.user.fullName}!`, 'success');
     if (res.user.role === 'ADMIN') {
       navigate('admin-dashboard');
     } else {
       navigate('gardener-dashboard');
     }
   } else {
+    showToast(res.message, 'danger');
     const slot = document.getElementById('loginAlertSlot');
     if (slot) {
       slot.innerHTML = `<div style="padding: 0.65rem 1rem; background: var(--danger-bg); color: var(--danger); border-radius: var(--radius-sm); font-size: 0.85rem; margin-bottom: 1rem;">${res.message}</div>`;
     }
   }
-}
-
-function quickFillLogin(email, password) {
-  document.getElementById('loginEmail').value = email;
-  document.getElementById('loginPassword').value = password;
 }
 
 function renderRegisterView() {
@@ -1298,6 +1301,7 @@ function handleRegisterSubmit(e) {
 
   const res = registerUser(fullName, email, password, bio, exp, loc);
   if (res.success) {
+    showToast(`Welcome to GreenThumb, ${fullName}! Account created.`, 'success');
     navigate('gardener-dashboard');
   } else {
     const slot = document.getElementById('registerAlertSlot');
@@ -1341,7 +1345,7 @@ function renderGardenerDashboard() {
             <h1 style="font-size:1.6rem; font-weight:800; letter-spacing:-0.02em;">Welcome back, ${user.fullName}</h1>
             <p style="color:var(--text-muted); font-size:0.9rem;">Overview of your personal garden plots and community contributions.</p>
           </div>
-          <button class="btn btn-primary" onclick="openNewProjectModal()">+ New Project</button>
+          <button class="btn btn-primary" onclick="openNewProjectModal()">${ICONS.plus} New Project</button>
         </div>
 
         <div class="stats-grid">
@@ -1366,7 +1370,7 @@ function renderGardenerDashboard() {
         <div class="card">
           <div class="card-header">
             <h2 class="card-title">My Gardening Projects</h2>
-            <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-projects')">View All &rarr;</button>
+            <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-projects')">View All ${ICONS.arrowRight}</button>
           </div>
 
           ${myProjects.length === 0 ? `
