@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: header-head('Planting Calendar')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="main-wrapper">
+    <aside th:replace="~{fragments/layout :: gardener-sidebar('planting-calendar')}"></aside>
+
+    <main class="content-area">
+
+        <h1>Seasonal Planting Calendar</h1>
+        <p style="color: var(--neutral-600); margin-bottom: 1.5rem;">
+            A month-by-month guide showing the best times to sow, transplant, and harvest common
+            vegetables and herbs. Use this calendar to plan your gardening activities throughout the year.
+        </p>
+
+        <div class="content-card">
+            <div class="card-header">
+                <h3>Monthly Planting Guide</h3>
+            </div>
+
+            <!-- Color Legend -->
+            <div class="calendar-legend">
+                <div class="legend-item">
+                    <span class="legend-color sow"></span> Sow Seeds
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color transplant"></span> Transplant
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color harvest"></span> Harvest
+                </div>
+            </div>
+
+            <!-- Calendar Table -->
+            <div class="table-container">
+                <table class="calendar-table">
+                    <thead>
+                        <tr>
+                            <th>Plant</th>
+                            <th>Jan</th>
+                            <th>Feb</th>
+                            <th>Mar</th>
+                            <th>Apr</th>
+                            <th>May</th>
+                            <th>Jun</th>
+                            <th>Jul</th>
+                            <th>Aug</th>
+                            <th>Sep</th>
+                            <th>Oct</th>
+                            <th>Nov</th>
+                            <th>Dec</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Tomato -->
+                        <tr>
+                            <td class="plant-name">Tomato</td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-transplant">TRANS</td>
+                            <td class="cal-transplant">TRANS</td>
+                            <td></td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <!-- Pepper -->
+                        <tr>
+                            <td class="plant-name">Pepper</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td></td>
+                            <td class="cal-transplant">TRANS</td>
+                            <td class="cal-transplant">TRANS</td>
+                            <td></td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <!-- Basil -->
+                        <tr>
+                            <td class="plant-name">Basil</td>
+                            <td></td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-transplant">TRANS</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <!-- Lettuce -->
+                        <tr>
+                            <td class="plant-name">Lettuce</td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                        </tr>
+                        <!-- Carrot -->
+                        <tr>
+                            <td class="plant-name">Carrot</td>
+                            <td></td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td></td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <!-- Spinach -->
+                        <tr>
+                            <td class="plant-name">Spinach</td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                        </tr>
+                        <!-- Peas -->
+                        <tr>
+                            <td class="plant-name">Peas</td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td></td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <!-- Beans -->
+                        <tr>
+                            <td class="plant-name">Beans</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <!-- Cucumber -->
+                        <tr>
+                            <td class="plant-name">Cucumber</td>
+                            <td></td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-transplant">TRANS</td>
+                            <td class="cal-transplant">TRANS</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <!-- Zucchini -->
+                        <tr>
+                            <td class="plant-name">Zucchini</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-transplant">TRANS</td>
+                            <td class="cal-transplant">TRANS</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <!-- Onion -->
+                        <tr>
+                            <td class="plant-name">Onion</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-transplant">TRANS</td>
+                            <td class="cal-transplant">TRANS</td>
+                            <td></td>
+                            <td></td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <!-- Garlic -->
+                        <tr>
+                            <td class="plant-name">Garlic</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td></td>
+                        </tr>
+                        <!-- Mint -->
+                        <tr>
+                            <td class="plant-name">Mint</td>
+                            <td></td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-transplant">TRANS</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <!-- Cilantro -->
+                        <tr>
+                            <td class="plant-name">Cilantro</td>
+                            <td></td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                        </tr>
+                        <!-- Parsley -->
+                        <tr>
+                            <td class="plant-name">Parsley</td>
+                            <td></td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-sow">SOW</td>
+                            <td class="cal-transplant">TRANS</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td class="cal-harvest">HARV</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:replace="~{fragments/layout :: theme-script}"></script>
+
+</body>
+</html>

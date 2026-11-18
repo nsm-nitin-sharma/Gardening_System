@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title} + ' - Online Gardening Community Platform'">Online Gardening Community</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script>
+        /* Apply saved theme preference before first paint to prevent flash */
+        (function() {
+            var savedTheme = localStorage.getItem('gardening-theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
 </head>
 <body>
 
@@ -29,6 +38,9 @@
     </ul>
 
     <div class="user-pill">
+        <button id="themeToggleBtn" class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <span id="themeIcon">&#9790;</span>
+        </button>
         <div sec:authorize="isAnonymous()">
             <a th:href="@{/login}" class="btn btn-primary btn-sm">Sign In</a>
             <a th:href="@{/register}" class="btn btn-secondary btn-sm">Register</a>
@@ -62,6 +74,9 @@
     <a th:href="@{/gardener/tips/my-tips}" th:classappend="${activePage == 'my-tips'} ? 'active'" class="sidebar-link">
         My Shared Tips
     </a>
+    <a th:href="@{/gardener/planting-calendar}" th:classappend="${activePage == 'planting-calendar'} ? 'active'" class="sidebar-link">
+        Planting Calendar
+    </a>
     <a th:href="@{/discussions}" th:classappend="${activePage == 'discussions'} ? 'active'" class="sidebar-link">
         Community Forum
     </a>
@@ -91,6 +106,36 @@
 <footer th:fragment="footer">
     <p>&copy; 2026 Online Gardening Community Platform. Academic Project Submission - Clean Java Architecture.</p>
 </footer>
+
+<!-- Dark mode toggle script -->
+<script th:fragment="theme-script">
+    /**
+     * Toggles between light and dark themes.
+     * Saves the user preference to localStorage for persistence across sessions.
+     */
+    function toggleTheme() {
+        var html = document.documentElement;
+        var current = html.getAttribute('data-theme');
+        var next = (current === 'dark') ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('gardening-theme', next);
+        updateThemeIcon(next);
+    }
+
+    function updateThemeIcon(theme) {
+        var icon = document.getElementById('themeIcon');
+        if (icon) {
+            /* Crescent moon for light mode (click to go dark), Sun for dark mode (click to go light) */
+            icon.innerHTML = (theme === 'dark') ? '&#9788;' : '&#9790;';
+        }
+    }
+
+    /* Set icon on page load based on current theme */
+    document.addEventListener('DOMContentLoaded', function() {
+        var savedTheme = localStorage.getItem('gardening-theme') || 'light';
+        updateThemeIcon(savedTheme);
+    });
+</script>
 
 </body>
 </html>
