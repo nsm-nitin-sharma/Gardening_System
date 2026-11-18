@@ -5,50 +5,53 @@
 
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<main class="content-area" style="margin: 0 auto; max-width: 900px; width: 100%;">
+<main class="content-area detail-container">
 
-    <div style="margin-bottom: 1.5rem;">
-        <a th:href="@{/discussions}" class="btn btn-secondary btn-sm">&larr; Back to All Discussions</a>
+    <div class="mb-3">
+        <a th:href="@{/discussions}" class="btn btn-secondary btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back to All Discussions
+        </a>
     </div>
 
     <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
 
     <!-- Main Topic Box -->
     <div class="content-card">
-        <span class="badge badge-harvesting" th:text="${topic.category}" style="margin-bottom: 0.75rem;">Category</span>
-        <h1 style="margin-bottom: 0.75rem;" th:text="${topic.title}">Discussion Title</h1>
+        <span class="badge badge-harvesting mb-2" th:text="${topic.category}">Category</span>
+        <h1 class="mb-2" th:text="${topic.title}">Discussion Title</h1>
 
-        <div style="color: var(--neutral-500); font-size: 0.88rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--neutral-200);">
-            Posted by <strong th:text="${topic.author.fullName}" style="color: var(--neutral-800);">Author Name</strong>
-            on <span th:text="${#temporals.format(topic.createdAt, 'MMMM dd, yyyy h:mm a')}">Date</span>
+        <div class="detail-header-meta">
+            <div>Posted by <strong th:text="${topic.author.fullName}" class="text-contrast">Author Name</strong>
+            on <span th:text="${#temporals.format(topic.createdAt, 'MMMM dd, yyyy h:mm a')}">Date</span></div>
         </div>
 
-        <div style="font-size: 1.05rem; line-height: 1.7; color: var(--neutral-800); white-space: pre-line;" th:text="${topic.content}">
+        <div class="detail-body-text" th:text="${topic.content}">
             Topic body content
         </div>
     </div>
 
     <!-- Comments / Responses Section -->
-    <div style="margin-top: 2rem;">
+    <div class="mt-4">
         <h3>Community Responses (<span th:text="${#lists.size(comments)}">0</span>)</h3>
 
-        <div th:each="comment : ${comments}" class="content-card" style="margin-top: 1rem; margin-bottom: 1rem; padding: 1.25rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--neutral-100);">
-                <span style="font-weight: 600; color: var(--primary-800);" th:text="${comment.author.fullName}">Responder Name</span>
-                <small style="color: var(--neutral-500);" th:text="${#temporals.format(comment.createdAt, 'MMM dd, yyyy h:mm a')}">Timestamp</small>
+        <div th:each="comment : ${comments}" class="content-card comment-card">
+            <div class="comment-header">
+                <span class="comment-author-name" th:text="${comment.author.fullName}">Responder Name</span>
+                <small class="author-meta-text" th:text="${#temporals.format(comment.createdAt, 'MMM dd, yyyy h:mm a')}">Timestamp</small>
             </div>
-            <p style="font-size: 0.95rem; color: var(--neutral-800); white-space: pre-line;" th:text="${comment.content}">Comment text</p>
+            <p class="comment-body" th:text="${comment.content}">Comment text</p>
         </div>
 
-        <div th:if="${#lists.isEmpty(comments)}" class="content-card" style="margin-top: 1rem; text-align: center; color: var(--neutral-500);">
+        <div th:if="${#lists.isEmpty(comments)}" class="empty-state-box">
             No responses yet. Be the first to share your insights!
         </div>
 
         <!-- Add Comment Form -->
-        <div class="content-card" style="margin-top: 2rem;">
-            <h4 style="margin-bottom: 1rem;">Leave a Comment</h4>
-            <div sec:authorize="isAnonymous()" style="text-align: center; padding: 1rem;">
-                <p style="color: var(--neutral-600); margin-bottom: 1rem;">You must be signed in to join the discussion.</p>
+        <div class="content-card mt-4">
+            <h4 class="mb-2">Leave a Comment</h4>
+            <div sec:authorize="isAnonymous()" class="text-center p-2">
+                <p class="mb-2 text-muted">You must be signed in to join the discussion.</p>
                 <a th:href="@{/login}" class="btn btn-primary">Sign In to Comment</a>
             </div>
             <div sec:authorize="isAuthenticated()">

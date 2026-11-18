@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Online Gardening Community Platform</title>
-  <link rel="stylesheet" href="./app.css">
+  <title>FloraHub - Online Gardening Community Platform</title>
+  <link rel="stylesheet" href="./app.css?v=florahub_live">
+  <!-- Firebase App & Firestore Cloud SDK (Compat SDK for direct file:// browser execution) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script>
     /* Immediate theme application before first paint to prevent screen flash */
     (function() {
@@ -40,9 +44,9 @@
       </nav>
 
       <div class="header-actions">
-        <div id="cloudStatusBadge" class="cloud-status-badge" title="Firebase Firestore Global Cloud Status">
+        <div id="cloudStatusBadge" class="cloud-status-badge connected" title="Connected to Firebase Firestore (florahub-6a9ea)">
           <span class="status-dot"></span>
-          <span class="status-text">Cloud Sync</span>
+          <span class="status-text">Cloud Live (Firebase)</span>
         </div>
         <button id="tourGuideBtn" class="btn btn-tour" onclick="openOnboarding(0)" title="Explore Tour & Platform Guide" aria-label="Explore Tour & Platform Guide">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -92,6 +96,6 @@
   </footer>
 
   <!-- Application Logic & Local Storage Database -->
-  <script src="./app.js"></script>
+  <script src="./app.js?v=florahub_live"></script>
 </body>
 </html>

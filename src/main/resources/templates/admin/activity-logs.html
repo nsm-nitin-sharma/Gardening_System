@@ -9,9 +9,9 @@
     <aside th:replace="~{fragments/layout :: admin-sidebar('activities')}"></aside>
 
     <main class="content-area">
-        <div style="margin-bottom: 2rem;">
+        <div class="page-header-simple">
             <h1>Activity Monitoring Logs</h1>
-            <p style="color: var(--neutral-500);">Complete security audit log of user registrations, profile updates, and administrative actions</p>
+            <p class="page-subtitle">Complete security audit log of user registrations, profile updates, and administrative actions</p>
         </div>
 
         <div class="content-card">
@@ -29,9 +29,11 @@
                     <tbody>
                         <tr th:each="log : ${activities}">
                             <td th:text="${log.id}">1</td>
-                            <td style="font-weight: 600;" th:text="${log.userEmail}">Email</td>
+                            <td class="font-semibold" th:text="${log.userEmail}">Email</td>
                             <td>
-                                <span class="badge badge-planning" th:text="${log.action}">ACTION</span>
+                                <span class="badge"
+                                      th:classappend="${#strings.contains(log.action, 'DELETE') or #strings.contains(log.action, 'REJECT')} ? 'badge-rejected' : (${#strings.contains(log.action, 'UPDATE') or #strings.contains(log.action, 'TOGGLE') or #strings.contains(log.action, 'MODERATE')} ? 'badge-pending' : (${#strings.contains(log.action, 'CREATE') or #strings.contains(log.action, 'REGISTER') or #strings.contains(log.action, 'ADD') or #strings.contains(log.action, 'APPROVED')} ? 'badge-approved' : 'badge-planning'))"
+                                      th:text="${log.action}">ACTION</span>
                             </td>
                             <td th:text="${log.details}">Details</td>
                             <td th:text="${#temporals.format(log.timestamp, 'yyyy-MM-dd HH:mm:ss')}">Time</td>

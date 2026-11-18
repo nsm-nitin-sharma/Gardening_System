@@ -9,9 +9,9 @@
     <aside th:replace="~{fragments/layout :: admin-sidebar('users')}"></aside>
 
     <main class="content-area">
-        <div style="margin-bottom: 2rem;">
+        <div class="page-header-simple">
             <h1>User Accounts Management</h1>
-            <p style="color: var(--neutral-500);">Overview of registered users, role administration, active toggles, and deletion</p>
+            <p class="page-subtitle">Overview of registered users, role administration, active toggles, and deletion</p>
         </div>
 
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
@@ -32,31 +32,51 @@
                     </thead>
                     <tbody>
                         <tr th:each="user : ${users}">
-                            <td th:text="${user.id}">1</td>
-                            <td style="font-weight: 600;" th:text="${user.fullName}">Full Name</td>
-                            <td th:text="${user.email}">user@email.com</td>
+                            <td th:text="${user.id}" class="text-id-cell">1</td>
                             <td>
-                                <span class="role-tag" th:classappend="${user.role.name() == 'ROLE_ADMIN'} ? 'admin'" th:text="${user.role}">GARDENER</span>
+                                <div class="user-cell-wrap">
+                                    <div class="user-avatar-sm" th:text="${#strings.substring(user.fullName, 0, 1)}">U</div>
+                                    <div>
+                                        <div class="font-semibold" th:text="${user.fullName}">Full Name</div>
+                                        <small class="text-muted" th:text="${user.email}">user@email.com</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-muted" th:text="${user.email}">user@email.com</td>
+                            <td>
+                                <span class="role-tag" th:classappend="${user.role.name() == 'ROLE_ADMIN'} ? 'admin'" th:text="${#strings.replace(user.role.name(), 'ROLE_', '')}">GARDENER</span>
                             </td>
                             <td>
                                 <span class="badge" th:classappend="${user.active} ? 'badge-approved' : 'badge-rejected'" th:text="${user.active ? 'ACTIVE' : 'DISABLED'}">ACTIVE</span>
                             </td>
                             <td>
-                                <form th:action="@{'/admin/users/' + ${user.id} + '/update-role'}" method="post" style="display: flex; gap: 0.4rem;">
-                                    <select name="role" class="form-control" style="width: auto; padding: 0.3rem;">
+                                <form th:action="@{'/admin/users/' + ${user.id} + '/update-role'}" method="post" class="flex-align-center-gap-sm">
+                                    <select name="role" class="form-control form-control-compact">
                                         <option value="ROLE_GARDENER" th:selected="${user.role.name() == 'ROLE_GARDENER'}">GARDENER</option>
                                         <option value="ROLE_ADMIN" th:selected="${user.role.name() == 'ROLE_ADMIN'}">ADMIN</option>
                                     </select>
-                                    <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+                                    <button type="submit" class="btn btn-secondary btn-sm" title="Save role change">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Save
+                                    </button>
                                 </form>
                             </td>
                             <td>
-                                <div style="display: flex; gap: 0.5rem;">
-                                    <form th:action="@{'/admin/users/' + ${user.id} + '/toggle-status'}" method="post">
-                                        <button type="submit" class="btn btn-sm" th:classappend="${user.active} ? 'btn-secondary' : 'btn-primary'" th:text="${user.active ? 'Deactivate' : 'Activate'}">Toggle</button>
+                                <div class="flex-align-center-gap-sm">
+                                    <form th:action="@{'/admin/users/' + ${user.id} + '/toggle-status'}" method="post" class="m-0">
+                                        <button type="submit" class="btn btn-sm" th:classappend="${user.active} ? 'btn-secondary' : 'btn-primary'">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path th:if="${user.active}" d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line th:if="${user.active}" x1="12" y1="2" x2="12" y2="12"/>
+                                                <circle th:if="${!user.active}" cx="12" cy="12" r="10"/><polyline th:if="${!user.active}" points="12 6 12 12 14 14"/>
+                                            </svg>
+                                            <span th:text="${user.active ? 'Deactivate' : 'Activate'}">Toggle</span>
+                                        </button>
                                     </form>
-                                    <form th:action="@{'/admin/users/' + ${user.id} + '/delete'}" method="post" onsubmit="return confirm('Are you sure you want to permanently delete this user account?');">
-                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    <form th:action="@{'/admin/users/' + ${user.id} + '/delete'}" method="post" onsubmit="return confirm('Are you sure you want to permanently delete this user account?');" class="m-0">
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete Account">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                            Delete
+                                        </button>
                                     </form>
                                 </div>
                             </td>

@@ -8,10 +8,10 @@
 <div class="main-wrapper">
     <aside th:replace="~{fragments/layout :: gardener-sidebar('projects')}"></aside>
 
-    <main class="content-area" style="max-width: 800px;">
-        <div style="margin-bottom: 2rem;">
+    <main class="content-area max-w-800">
+        <div class="page-header-simple">
             <h1>Create Gardening Project</h1>
-            <p style="color: var(--neutral-500);">Setup a new tracking board for your outdoor garden beds, pots, or greenhouse</p>
+            <p class="page-subtitle">Setup a new tracking board for your outdoor garden beds, pots, or greenhouse</p>
         </div>
 
         <div class="content-card">
@@ -41,7 +41,7 @@
                     </select>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="grid-2col">
                     <div class="form-group">
                         <label class="form-label" for="startDate">Start Date</label>
                         <input type="date" id="startDate" name="startDate" class="form-control" th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
@@ -53,7 +53,10 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Create Gardening Project</button>
+                <button type="submit" class="btn btn-primary">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                    <span>Create Gardening Project</span>
+                </button>
             </form>
         </div>
     </main>

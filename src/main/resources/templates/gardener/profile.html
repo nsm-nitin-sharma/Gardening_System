@@ -8,10 +8,10 @@
 <div class="main-wrapper">
     <aside th:replace="~{fragments/layout :: gardener-sidebar('profile')}"></aside>
 
-    <main class="content-area" style="max-width: 800px;">
-        <div style="margin-bottom: 2rem;">
+    <main class="content-area max-w-800">
+        <div class="page-header-simple">
             <h1>Profile Management</h1>
-            <p style="color: var(--neutral-500);">Update your personal gardener profile details and public preferences</p>
+            <p class="page-subtitle">Update your personal gardener profile details and public preferences</p>
         </div>
 
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
@@ -20,7 +20,7 @@
             <form th:action="@{/gardener/profile/update}" method="post">
                 <div class="form-group">
                     <label class="form-label">Email Address (Read-only)</label>
-                    <input type="email" class="form-control" th:value="${user.email}" disabled style="background: var(--neutral-100);">
+                    <input type="email" class="form-control" th:value="${user.email}" disabled>
                 </div>
 
                 <div class="form-group">

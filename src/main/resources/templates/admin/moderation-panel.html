@@ -9,46 +9,55 @@
     <aside th:replace="~{fragments/layout :: admin-sidebar('moderation')}"></aside>
 
     <main class="content-area">
-        <div style="margin-bottom: 2rem;">
+        <div class="page-header-simple">
             <h1>Content Moderation Panel</h1>
-            <p style="color: var(--neutral-500);">Review pending user-submitted gardening tips before public release</p>
+            <p class="page-subtitle">Review pending user-submitted gardening tips before public release</p>
         </div>
 
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
 
-        <div th:each="tip : ${pendingTips}" class="content-card" style="margin-bottom: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+        <div th:each="tip : ${pendingTips}" class="content-card mb-4">
+            <div class="card-title-row">
                 <div>
-                    <span class="badge badge-planning" th:text="${tip.category}" style="margin-bottom: 0.5rem;">Category</span>
-                    <h2 th:text="${tip.title}" style="margin-top: 0.3rem;">Tip Title</h2>
-                    <div style="color: var(--neutral-500); font-size: 0.88rem; margin-top: 0.25rem;" th:text="'Submitted by ' + ${tip.author.fullName} + ' (' + ${tip.author.email} + ') on ' + ${#temporals.format(tip.createdAt, 'MMMM dd, yyyy HH:mm')}">Meta</div>
+                    <span class="badge badge-planning mb-1" th:text="${tip.category}">Category</span>
+                    <h2 th:text="${tip.title}" class="mt-xs">Tip Title</h2>
+                    <div class="author-meta-text mt-xs" th:text="'Submitted by ' + ${tip.author.fullName} + ' (' + ${tip.author.email} + ') on ' + ${#temporals.format(tip.createdAt, 'MMMM dd, yyyy HH:mm')}">Meta</div>
                 </div>
                 <span class="badge badge-pending">PENDING APPROVAL</span>
             </div>
 
-            <img th:if="${tip.imageUrl != null and !#strings.isEmpty(tip.imageUrl)}" th:src="${tip.imageUrl}" style="max-height: 250px; width: 100%; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 1.25rem;" alt="Submitted photo">
+            <img th:if="${tip.imageUrl != null and !#strings.isEmpty(tip.imageUrl)}" th:src="${tip.imageUrl}" class="moderation-img" alt="Submitted photo">
 
-            <div style="background: var(--neutral-50); padding: 1.25rem; border-radius: var(--radius-md); font-size: 0.98rem; line-height: 1.7; margin-bottom: 1.5rem; white-space: pre-line;" th:text="${tip.description}">
+            <div class="moderation-content-preview" th:text="${tip.description}">
                 Tip Content Description
             </div>
 
             <!-- Moderation Action Form -->
-            <form th:action="@{'/admin/moderation/tip/' + ${tip.id}}" method="post" style="border-top: 1px solid var(--neutral-200); padding-top: 1.25rem;">
+            <form th:action="@{'/admin/moderation/tip/' + ${tip.id}}" method="post" class="card-footer-form">
                 <div class="form-group">
                     <label class="form-label">Moderation Note / Feedback Reason</label>
                     <input type="text" name="moderationNote" class="form-control" placeholder="e.g. Approved - Great organic gardening practice / Rejected - Duplicate topic">
                 </div>
 
-                <div style="display: flex; gap: 1rem;">
-                    <button type="submit" name="status" value="APPROVED" class="btn btn-primary">Approve Content</button>
-                    <button type="submit" name="status" value="REJECTED" class="btn btn-danger">Reject Content</button>
+                <div class="flex-gap-1">
+                    <button type="submit" name="status" value="APPROVED" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Approve Content
+                    </button>
+                    <button type="submit" name="status" value="REJECTED" class="btn btn-danger">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        Reject Content
+                    </button>
                 </div>
             </form>
         </div>
 
-        <div th:if="${#lists.isEmpty(pendingTips)}" class="content-card" style="text-align: center; padding: 3rem; color: var(--neutral-500);">
-            <h3>All Caught Up!</h3>
-            <p style="margin-top: 0.5rem;">No user tips are currently awaiting moderation approval.</p>
+        <div th:if="${#lists.isEmpty(pendingTips)}" class="empty-state-card">
+            <div class="empty-state-icon-wrap">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            </div>
+            <h3 class="mb-1">All Caught Up!</h3>
+            <p class="empty-state-text">No user gardening tips are currently awaiting moderation approval.</p>
         </div>
 
     </main>

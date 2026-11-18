@@ -60,9 +60,9 @@ function getIcon(name, size = 18, extraClass = '') {
 const ONBOARDING_STEPS = [
   {
     step: 1,
-    badge: 'Welcome to GreenThumb',
+    badge: 'Welcome to FloraHub',
     title: 'Botanical Community Hub',
-    subtitle: 'Zero-Dependency Horticultural Intelligence',
+    subtitle: 'Interactive Horticultural Ecosystem',
     description: 'Welcome to a collaborative platform for gardening enthusiasts, botanists, and urban growers. Engineered with a resilient zero-dependency architecture, all your data, planting schedules, and garden logs run and persist locally in your browser via the file:// protocol.',
     heroIcon: 'sprout',
     features: [
@@ -196,16 +196,7 @@ const ONBOARDING_STEPS = [
 let currentOnboardingIndex = 0;
 
 function checkOnboardingAutoLaunch() {
-  try {
-    const seen = localStorage.getItem('GARDENING_COMMUNITY_ONBOARDING_SEEN');
-    if (!seen && (!db.data || !db.data.onboardingSeen)) {
-      setTimeout(() => {
-        openOnboarding(0);
-      }, 400);
-    }
-  } catch (e) {
-    console.warn('LocalStorage check for onboarding failed', e);
-  }
+  // Tour Guide is on-demand via the Tour Guide button in header; do not block or pop up over the homepage
 }
 
 function openOnboarding(stepIndex = 0) {
@@ -690,27 +681,33 @@ let firestoreDb = null;
 let isCloudConnected = false;
 
 function initFirebase() {
-  try {
+  let attempts = 0;
+  function connect() {
+    attempts++;
     if (typeof firebase !== 'undefined' && firebase.initializeApp) {
-      if (!firebase.apps.length) {
-        firebaseApp = firebase.initializeApp(firebaseConfig);
-      } else {
-        firebaseApp = firebase.app();
+      try {
+        if (!firebase.apps.length) {
+          firebaseApp = firebase.initializeApp(firebaseConfig);
+        } else {
+          firebaseApp = firebase.app();
+        }
+        firestoreDb = firebase.firestore();
+        isCloudConnected = true;
+        updateCloudStatusUI(true);
+        console.log('[Firebase] Successfully connected to live Firestore project:', firebaseConfig.projectId);
+        setupFirestoreRealtimeListeners();
+      } catch (err) {
+        console.warn('[Firebase] Initialization error:', err);
+        updateCloudStatusUI(false);
       }
-      firestoreDb = firebase.firestore();
-      isCloudConnected = true;
-      updateCloudStatusUI(true);
-      console.log('[Firebase] Successfully connected to live Firestore project:', firebaseConfig.projectId);
-      setupFirestoreRealtimeListeners();
+    } else if (attempts < 15) {
+      setTimeout(connect, 200);
     } else {
-      console.warn('[Firebase] SDK not loaded; operating in local mode.');
+      console.warn('[Firebase] SDK not loaded after multiple attempts; operating in local mode.');
       updateCloudStatusUI(false);
     }
-  } catch (err) {
-    console.warn('[Firebase] Initialization error:', err);
-    isCloudConnected = false;
-    updateCloudStatusUI(false);
   }
+  connect();
 }
 
 function updateCloudStatusUI(connected) {
@@ -1064,7 +1061,7 @@ function renderHomeView() {
     <div style="margin-bottom: 2rem;">
       <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 1.25rem;">
         <div>
-          <span style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--primary-600);">New to GreenThumb?</span>
+          <span style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--primary-600);">New to FloraHub?</span>
           <h2 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">How the Platform Works</h2>
         </div>
         <span style="font-size:0.85rem; color:var(--text-muted);">Three simple steps to manage your green space</span>
@@ -1426,7 +1423,7 @@ function renderGardenerProjects() {
             <h1 style="font-size:1.6rem; font-weight:800;">My Garden Projects</h1>
             <p style="color:var(--text-muted); font-size:0.9rem;">Organize your crops, log growth milestones, and generate PDF harvest reports.</p>
           </div>
-          <button class="btn btn-primary" onclick="openNewProjectModal()">+ Add New Project</button>
+          <button class="btn btn-primary" onclick="openNewProjectModal()">${ICONS.plus} Add New Project</button>
         </div>
 
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.25rem;">
@@ -1445,7 +1442,7 @@ function renderGardenerProjects() {
               </div>
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-size:0.8rem; color:var(--text-subtle);">${p.logs.length} logged milestones</span>
-                <button class="btn btn-primary btn-sm" onclick="navigate('gardener-project-detail', ${p.id})">Open Project &rarr;</button>
+                <button class="btn btn-primary btn-sm" onclick="navigate('gardener-project-detail', ${p.id})">Open Project ${ICONS.arrowRight}</button>
               </div>
             </div>
           `).join('')}
@@ -1458,7 +1455,7 @@ function renderGardenerProjects() {
 function renderProjectDetail(projectId) {
   const project = db.data.projects.find(p => p.id === Number(projectId));
   if (!project) {
-    return `<div class="card"><p>Project not found.</p><button class="btn btn-secondary" onclick="navigate('gardener-projects')">&larr; Back</button></div>`;
+    return `<div class="card"><p>Project not found.</p><button class="btn btn-secondary" onclick="navigate('gardener-projects')">${ICONS.arrowLeft} Back</button></div>`;
   }
 
   return `
@@ -1466,10 +1463,10 @@ function renderProjectDetail(projectId) {
       ${getGardenerSidebar('projects')}
       <main>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:0.75rem;">
-          <button class="btn btn-secondary btn-sm" onclick="navigate('gardener-projects')">&larr; Back to Projects</button>
+          <button class="btn btn-secondary btn-sm" onclick="navigate('gardener-projects')">${ICONS.arrowLeft} Back to Projects</button>
           <div style="display:flex; gap:0.5rem;">
-            <button class="btn btn-primary btn-sm" onclick="window.print()">Download / Print PDF Report</button>
-            <button class="btn btn-outline-primary btn-sm" onclick="openAddLogModal(${project.id})">+ Log Progress</button>
+            <button class="btn btn-primary btn-sm" onclick="window.print()">${ICONS.printer} Download / Print PDF Report</button>
+            <button class="btn btn-outline-primary btn-sm" onclick="openAddLogModal(${project.id})">${ICONS.plus} Log Progress</button>
           </div>
         </div>
 
@@ -1503,7 +1500,7 @@ function renderProjectDetail(projectId) {
 
           ${project.logs.length === 0 ? `
             <div style="padding:1.5rem; text-align:center; border:1px dashed var(--border-light); border-radius:var(--radius-sm); color:var(--text-subtle);">
-              No progress logs recorded yet. Click <strong>+ Log Progress</strong> above to document seedling growth, feeding, or harvests.
+              No progress logs recorded yet. Click <strong>${ICONS.plus} Log Progress</strong> above to document seedling growth, feeding, or harvests.
             </div>
           ` : `
             <div class="table-responsive">
@@ -1542,6 +1539,7 @@ function updateProjectStatus(projectId, newStatus) {
     if (typeof syncDocToFirestore === 'function') {
       syncDocToFirestore('projects', p.id, p);
     }
+    showToast(`Project status updated to ${newStatus}`, 'info');
     navigate('gardener-project-detail', projectId);
   }
 }
@@ -1645,7 +1643,7 @@ function renderGardenerTips() {
             <h1 style="font-size:1.65rem; font-weight:800;">Community Gardening Tips</h1>
             <p style="color:var(--text-muted); font-size:0.9rem;">Browse curated knowledge or submit your own cultivation advice.</p>
           </div>
-          <button class="btn btn-primary" onclick="openNewTipModal()">+ Share a Tip</button>
+          <button class="btn btn-primary" onclick="openNewTipModal()">${ICONS.plus} Share a Tip</button>
         </div>
 
         <div class="card" style="padding:1rem; margin-bottom:1.5rem;">
@@ -1727,7 +1725,7 @@ function renderDiscussionsView() {
             <h1 style="font-size:1.65rem; font-weight:800;">Community Forum</h1>
             <p style="color:var(--text-muted); font-size:0.9rem;">Ask questions, diagnose plant issues, and discuss organic solutions.</p>
           </div>
-          <button class="btn btn-primary" onclick="openNewDiscussionModal()">+ Start Topic</button>
+          <button class="btn btn-primary" onclick="openNewDiscussionModal()">${ICONS.plus} Start Topic</button>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:1.25rem;">
@@ -1792,6 +1790,7 @@ function addCommentToTopic(topicId) {
     if (typeof syncDocToFirestore === 'function') {
       syncDocToFirestore('discussions', topic.id, topic);
     }
+    showToast('Comment posted successfully!', 'success');
     navigate('gardener-discussions');
   }
 }
@@ -1858,7 +1857,7 @@ function handleProfileUpdate(e) {
   if (typeof syncDocToFirestore === 'function' && target) {
     syncDocToFirestore('users', target.id, target);
   }
-  alert('Profile updated successfully!');
+  showToast('Profile updated successfully!', 'success');
   navigate('gardener-profile');
 }
 
@@ -1920,7 +1919,7 @@ function renderAdminDashboard() {
         <div class="card">
           <div class="card-header">
             <h2 class="card-title">Pending Moderation Queue (${pendingTips.length})</h2>
-            <button class="btn btn-outline-primary btn-sm" onclick="navigate('admin-moderation')">View Full Queue &rarr;</button>
+            <button class="btn btn-outline-primary btn-sm" onclick="navigate('admin-moderation')">View Full Queue ${ICONS.arrowRight}</button>
           </div>
 
           ${pendingTips.length === 0 ? `
@@ -2103,17 +2102,78 @@ function renderAdminModeration() {
 }
 
 function moderateTip(tipId, status) {
+  openModerationModal(tipId, status);
+}
+
+function openModerationModal(tipId, status) {
+  const tip = db.data.tips.find(x => x.id === Number(tipId));
+  if (!tip) return;
+
+  const overlay = document.getElementById('modalOverlay');
+  const slot = document.getElementById('modalSlot');
+  const isApprove = status === 'APPROVED';
+
+  slot.innerHTML = `
+    <div class="modal-header">
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <span class="badge ${isApprove ? 'badge-success' : 'badge-danger'}">
+          ${isApprove ? 'Approve Tip' : 'Reject Tip'}
+        </span>
+        <h3 class="modal-title" style="margin:0;">Horticultural Moderation</h3>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close modal">${ICONS.close}</button>
+    </div>
+
+    <div style="padding:1rem 0;">
+      <div style="background:var(--bg-subtle); border-radius:var(--radius-sm); padding:0.85rem; margin-bottom:1rem; border-left:3px solid ${isApprove ? 'var(--success)' : 'var(--danger)'};">
+        <div style="font-weight:700; font-size:0.95rem; margin-bottom:0.25rem;">${tip.title}</div>
+        <div style="font-size:0.84rem; color:var(--text-muted); line-height:1.4; margin-bottom:0.4rem;">${tip.description}</div>
+        <div style="font-size:0.75rem; color:var(--text-subtle);">
+          Submitted by <strong>${tip.authorName}</strong> &bull; Category: <strong>${tip.category}</strong>
+        </div>
+      </div>
+
+      <form onsubmit="handleModerationSubmit(event, ${tip.id}, '${status}')">
+        <div class="form-group">
+          <label class="form-label" for="moderationFeedbackInput">Moderation Feedback Note</label>
+          <textarea id="moderationFeedbackInput" class="form-control" rows="3" required>${isApprove ? 'Verified horticultural practice. Approved for community.' : 'Does not meet platform quality or organic cultivation guidelines.'}</textarea>
+          <span style="font-size:0.75rem; color:var(--text-subtle); display:block; margin-top:0.35rem;">
+            This feedback will be stored with the tip record and displayed to the community.
+          </span>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn ${isApprove ? 'btn-primary' : 'btn-danger'}">
+            ${isApprove ? 'Confirm Approval' : 'Confirm Rejection'}
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  overlay.classList.add('active');
+}
+
+function handleModerationSubmit(e, tipId, status) {
+  e.preventDefault();
+  const note = document.getElementById('moderationFeedbackInput').value.trim();
   const tip = db.data.tips.find(x => x.id === Number(tipId));
   if (tip) {
-    const note = prompt(`Enter optional moderation feedback for "${tip.title}":`, status === 'APPROVED' ? 'Verified horticultural content.' : 'Does not meet submission guidelines.');
     tip.status = status;
     tip.moderationNote = note;
-    db.logActivity('admin@gardening.com', 'MODERATE_TIP', `Tip "${tip.title}" set to ${status}`);
+    db.logActivity('admin@gardening.com', 'MODERATE_TIP', `Tip "${tip.title}" marked ${status}`);
     db.save();
     if (typeof syncDocToFirestore === 'function') {
       syncDocToFirestore('tips', tip.id, tip);
     }
-    navigate('admin-moderation');
+    closeModal();
+    showToast(`Tip "${tip.title}" ${status === 'APPROVED' ? 'approved' : 'rejected'}.`, status === 'APPROVED' ? 'success' : 'warning');
+    if (currentActiveView === 'admin-dashboard') {
+      navigate('admin-dashboard');
+    } else {
+      navigate('admin-moderation');
+    }
   }
 }
 
@@ -2170,7 +2230,7 @@ function handleSettingsSave(e) {
   if (typeof syncDocToFirestore === 'function') {
     syncDocToFirestore('settings', 'config', db.data.settings);
   }
-  alert('System settings saved successfully!');
+  showToast('System settings saved successfully!', 'success');
   navigate('admin-settings');
 }
 
@@ -2225,7 +2285,7 @@ function openNewProjectModal() {
   content.innerHTML = `
     <div class="modal-header">
       <h3 class="modal-title">New Garden Project</h3>
-      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close modal">${ICONS.close}</button>
     </div>
     <form onsubmit="handleNewProjectSubmit(event)">
       <div class="form-group">
@@ -2280,6 +2340,7 @@ function handleNewProjectSubmit(e) {
     syncDocToFirestore('projects', newProj.id, newProj);
   }
   closeModal();
+  showToast('Garden project created successfully!', 'success');
   navigate('gardener-projects');
 }
 
@@ -2289,7 +2350,7 @@ function openAddLogModal(projectId) {
   content.innerHTML = `
     <div class="modal-header">
       <h3 class="modal-title">Record Growth Milestone</h3>
-      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close modal">${ICONS.close}</button>
     </div>
     <form onsubmit="handleAddLogSubmit(event, ${projectId})">
       <div class="form-group">
@@ -2326,6 +2387,7 @@ function handleAddLogSubmit(e, projectId) {
       syncDocToFirestore('projects', proj.id, proj);
     }
     closeModal();
+    showToast('Growth milestone log recorded!', 'success');
     navigate('gardener-project-detail', projectId);
   }
 }
@@ -2336,7 +2398,7 @@ function openNewTipModal() {
   content.innerHTML = `
     <div class="modal-header">
       <h3 class="modal-title">Share a Gardening Tip</h3>
-      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close modal">${ICONS.close}</button>
     </div>
     <form onsubmit="handleNewTipSubmit(event)">
       <div class="form-group">
@@ -2387,6 +2449,7 @@ function handleNewTipSubmit(e) {
     syncDocToFirestore('tips', newTip.id, newTip);
   }
   closeModal();
+  showToast(autoApprove ? 'Tip published to community!' : 'Tip submitted for admin moderation!', 'success');
   navigate('gardener-tips');
 }
 
@@ -2396,7 +2459,7 @@ function openNewDiscussionModal() {
   content.innerHTML = `
     <div class="modal-header">
       <h3 class="modal-title">Start a Forum Discussion</h3>
-      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close modal">${ICONS.close}</button>
     </div>
     <form onsubmit="handleNewDiscussionSubmit(event)">
       <div class="form-group">
@@ -2444,6 +2507,7 @@ function handleNewDiscussionSubmit(e) {
     syncDocToFirestore('discussions', newDisc.id, newDisc);
   }
   closeModal();
+  showToast('Discussion topic published!', 'success');
   navigate('gardener-discussions');
 }
 
@@ -2459,4 +2523,5 @@ window.addEventListener('DOMContentLoaded', () => {
   initTheme();
   navigate('home');
   initFirebase();
+  checkOnboardingAutoLaunch();
 });

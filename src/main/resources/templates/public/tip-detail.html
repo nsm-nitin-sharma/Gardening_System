@@ -5,32 +5,35 @@
 
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<main class="content-area" style="margin: 0 auto; max-width: 900px; width: 100%;">
+<main class="content-area detail-container">
 
-    <div style="margin-bottom: 1.5rem;">
-        <a th:href="@{/tips}" class="btn btn-secondary btn-sm">&larr; Back to All Tips</a>
+    <div class="mb-3">
+        <a th:href="@{/tips}" class="btn btn-secondary btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back to All Tips
+        </a>
     </div>
 
     <div class="content-card">
-        <span class="badge badge-planning" th:text="${tip.category}" style="margin-bottom: 0.75rem;">Category</span>
-        <h1 style="margin-bottom: 1rem;" th:text="${tip.title}">Tip Title</h1>
+        <span class="badge badge-planning mb-2" th:text="${tip.category}">Category</span>
+        <h1 class="mb-2" th:text="${tip.title}">Tip Title</h1>
 
-        <div style="display: flex; align-items: center; gap: 1rem; color: var(--neutral-500); font-size: 0.9rem; margin-bottom: 1.75rem; padding-bottom: 1rem; border-bottom: 1px solid var(--neutral-200);">
-            <div>Shared by <strong th:text="${tip.author.fullName}" style="color: var(--neutral-800);">Author Name</strong></div>
+        <div class="detail-header-meta">
+            <div>Shared by <strong th:text="${tip.author.fullName}" class="text-contrast">Author Name</strong></div>
             <div>•</div>
             <div th:text="${#temporals.format(tip.createdAt, 'MMMM dd, yyyy')}">Date</div>
         </div>
 
-        <img th:if="${tip.imageUrl != null and !#strings.isEmpty(tip.imageUrl)}" th:src="${tip.imageUrl}" style="width: 100%; max-height: 420px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 2rem;" alt="Tip photo">
+        <img th:if="${tip.imageUrl != null and !#strings.isEmpty(tip.imageUrl)}" th:src="${tip.imageUrl}" class="detail-hero-image" alt="Tip photo">
 
-        <div style="font-size: 1.05rem; line-height: 1.8; color: var(--neutral-800); white-space: pre-line;" th:text="${tip.description}">
+        <div class="detail-body-text" th:text="${tip.description}">
             Tip full description
         </div>
 
-        <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--neutral-200); background: var(--neutral-50); padding: 1.25rem; border-radius: var(--radius-md);">
-            <h4 style="margin-bottom: 0.4rem;">About the Gardener</h4>
-            <p style="font-size: 0.92rem; color: var(--neutral-600);" th:text="${tip.author.bio != null and !#strings.isEmpty(tip.author.bio)} ? ${tip.author.bio} : 'Gardener member of the platform.'">Bio</p>
-            <div style="display: flex; gap: 1rem; font-size: 0.82rem; color: var(--neutral-500); margin-top: 0.5rem;">
+        <div class="author-bio-box">
+            <h4 class="mb-xs">About the Gardener</h4>
+            <p class="author-bio-text" th:text="${tip.author.bio != null and !#strings.isEmpty(tip.author.bio)} ? ${tip.author.bio} : 'Gardener member of the platform.'">Bio</p>
+            <div class="author-bio-meta">
                 <span th:if="${tip.author.gardeningExperience != null}" th:text="'Experience: ' + ${tip.author.gardeningExperience}">Exp</span>
                 <span th:if="${tip.author.location != null}" th:text="'Location: ' + ${tip.author.location}">Loc</span>
             </div>

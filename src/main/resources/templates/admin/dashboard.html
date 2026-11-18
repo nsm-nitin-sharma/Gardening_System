@@ -9,9 +9,9 @@
     <aside th:replace="~{fragments/layout :: admin-sidebar('dashboard')}"></aside>
 
     <main class="content-area">
-        <div style="margin-bottom: 2rem;">
+        <div class="page-header-simple">
             <h1>Administrator Dashboard</h1>
-            <p style="color: var(--neutral-500);">Platform metrics, content moderation queue, and user activity overview</p>
+            <p class="page-subtitle">Platform metrics, content moderation queue, and user activity overview</p>
         </div>
 
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
@@ -34,7 +34,7 @@
                     <div class="metric-value" th:text="${pendingTips}">0</div>
                 </div>
                 <div class="metric-icon warning">
-                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M1Member 1a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8.009 8.009 0 0 1-8 8zm0-13a1 1 0 0 0-1 1v4a1 1 0 0 0 2 0V8a1 1 0 0 0-1-1zm0 8a1 1 0 1 0 1 1 1 1 0 0 0-1-1z"/></svg>
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8.009 8.009 0 0 1-8 8zm0-13a1 1 0 0 0-1 1v4a1 1 0 0 0 2 0V8a1 1 0 0 0-1-1zm0 8a1 1 0 1 0 1 1 1 1 0 0 0-1-1z"/></svg>
                 </div>
             </div>
 
@@ -53,7 +53,10 @@
         <div class="content-card">
             <div class="card-header">
                 <h3>Pending Content Moderation Queue</h3>
-                <a th:href="@{/admin/moderation}" class="btn btn-secondary btn-sm">Manage All Moderation &rarr;</a>
+                <a th:href="@{/admin/moderation}" class="btn btn-secondary btn-sm">
+                    <span>Manage All Moderation</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
             </div>
 
             <div class="table-container">
@@ -69,7 +72,7 @@
                     </thead>
                     <tbody>
                         <tr th:each="tip : ${pendingContentList}">
-                            <td style="font-weight: 600;" th:text="${tip.title}">Title</td>
+                            <td class="font-semibold" th:text="${tip.title}">Title</td>
                             <td th:text="${tip.category}">Category</td>
                             <td th:text="${tip.author.fullName}">Author</td>
                             <td th:text="${#temporals.format(tip.createdAt, 'MMM dd, yyyy HH:mm')}">Date</td>
@@ -78,7 +81,7 @@
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(pendingContentList)}">
-                            <td colspan="5" style="text-align: center; color: var(--neutral-500); padding: 2rem;">
+                            <td colspan="5" class="table-empty-cell">
                                 No pending content requiring moderation approval.
                             </td>
                         </tr>
@@ -91,7 +94,10 @@
         <div class="content-card">
             <div class="card-header">
                 <h3>Recent System Activities</h3>
-                <a th:href="@{/admin/activities}" class="btn btn-secondary btn-sm">View Full Audit Log &rarr;</a>
+                <a th:href="@{/admin/activities}" class="btn btn-secondary btn-sm">
+                    <span>View Full Audit Log</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
             </div>
 
             <div class="table-container">
@@ -106,9 +112,11 @@
                     </thead>
                     <tbody>
                         <tr th:each="log : ${recentActivities}">
-                            <td style="font-weight: 600;" th:text="${log.userEmail}">Email</td>
+                            <td class="font-semibold" th:text="${log.userEmail}">Email</td>
                             <td>
-                                <span class="badge badge-planning" th:text="${log.action}">ACTION</span>
+                                <span class="badge"
+                                      th:classappend="${#strings.contains(log.action, 'DELETE') or #strings.contains(log.action, 'REJECT')} ? 'badge-rejected' : (${#strings.contains(log.action, 'UPDATE') or #strings.contains(log.action, 'TOGGLE') or #strings.contains(log.action, 'MODERATE')} ? 'badge-pending' : (${#strings.contains(log.action, 'CREATE') or #strings.contains(log.action, 'REGISTER') or #strings.contains(log.action, 'ADD') or #strings.contains(log.action, 'APPROVED')} ? 'badge-approved' : 'badge-planning'))"
+                                      th:text="${log.action}">ACTION</span>
                             </td>
                             <td th:text="${log.details}">Details</td>
                             <td th:text="${#temporals.format(log.timestamp, 'MMM dd, yyyy HH:mm:ss')}">Time</td>

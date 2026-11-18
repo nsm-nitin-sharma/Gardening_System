@@ -8,6 +8,8 @@ REM
 REM  Usage: Double-click this file or run from command prompt.
 REM ============================================================================
 
+cd /d "%~dp0"
+
 title Online Gardening Community Platform
 
 echo.

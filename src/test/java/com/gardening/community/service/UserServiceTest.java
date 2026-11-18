@@ -1,9 +1,8 @@
 package com.gardening.community.service;
 
 import com.gardening.community.dto.UserRegistrationDto;
-import com.gardening.community.model.Role;
-import com.gardening.community.model.User;
-import com.gardening.community.repository.UserRepository;
+import com.gardening.community.model.*;
+import com.gardening.community.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,17 +12,21 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for UserService covering registration, profile updates,
- * account toggling, and role management operations.
+ * account toggling, role management, and defensive account deletion operations.
  */
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -36,6 +39,18 @@ class UserServiceTest {
 
     @Mock
     private ActivityLogService activityLogService;
+
+    @Mock
+    private TipRepository tipRepository;
+
+    @Mock
+    private GardeningProjectRepository projectRepository;
+
+    @Mock
+    private DiscussionTopicRepository discussionTopicRepository;
+
+    @Mock
+    private DiscussionCommentRepository discussionCommentRepository;
 
     @InjectMocks
     private UserService userService;
@@ -144,5 +159,79 @@ class UserServiceTest {
 
         assertTrue(found.isPresent(), "User should be found");
         assertEquals("Existing User", found.get().getFullName());
+    }
+
+    @Test
+    @DisplayName("Should defensively delete user and all associated tips, projects, topics, and comments")
+    void shouldDefensivelyDeleteUserWithDependencies() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
+
+        Tip tip = new Tip("Sample Tip", "Vegetables", "Desc", null, existingUser, TipStatus.APPROVED);
+        GardeningProject project = new GardeningProject("Sample Project", "Desc", "Basil", ProjectStatus.IN_PROGRESS, existingUser, null, null);
+        DiscussionTopic topic = new DiscussionTopic("Sample Topic", "Pest", "Desc", existingUser, TipStatus.APPROVED);
+        DiscussionComment comment = new DiscussionComment(topic, existingUser, "Sample Comment");
+
+        when(tipRepository.findByAuthorOrderByCreatedAtDesc(existingUser)).thenReturn(List.of(tip));
+        when(projectRepository.findByUserOrderByCreatedAtDesc(existingUser)).thenReturn(List.of(project));
+        when(discussionTopicRepository.findByAuthorOrderByCreatedAtDesc(existingUser)).thenReturn(List.of(topic));
+        when(discussionCommentRepository.findByAuthor(existingUser)).thenReturn(List.of(comment));
+
+        userService.deleteUser(1L, "admin@example.com");
+
+        verify(tipRepository).deleteAll(List.of(tip));
+        verify(projectRepository).deleteAll(List.of(project));
+        verify(discussionTopicRepository).deleteAll(List.of(topic));
+        verify(discussionCommentRepository).deleteAll(List.of(comment));
+        verify(userRepository).delete(existingUser);
+        verify(activityLogService).logActivity(eq("admin@example.com"), eq("DELETE_USER"), contains("existing@example.com"));
+    }
+
+    @Test
+    @DisplayName("Should delete user when no authored content exists")
+    void shouldDeleteUserWithoutAuthoredContent() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
+        when(tipRepository.findByAuthorOrderByCreatedAtDesc(existingUser)).thenReturn(Collections.emptyList());
+        when(projectRepository.findByUserOrderByCreatedAtDesc(existingUser)).thenReturn(Collections.emptyList());
+        when(discussionTopicRepository.findByAuthorOrderByCreatedAtDesc(existingUser)).thenReturn(Collections.emptyList());
+        when(discussionCommentRepository.findByAuthor(existingUser)).thenReturn(Collections.emptyList());
+
+        userService.deleteUser(1L, "admin@example.com");
+
+        verify(tipRepository, never()).deleteAll(anyList());
+        verify(projectRepository, never()).deleteAll(anyList());
+        verify(discussionTopicRepository, never()).deleteAll(anyList());
+        verify(discussionCommentRepository, never()).deleteAll(anyList());
+        verify(userRepository).delete(existingUser);
+        verify(activityLogService).logActivity(eq("admin@example.com"), eq("DELETE_USER"), contains("existing@example.com"));
+    }
+
+    @Test
+    @DisplayName("Should throw exception when deleting non-existent user")
+    void shouldThrowExceptionWhenDeletingNonExistentUser() {
+        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> userService.deleteUser(999L, "admin@example.com")
+        );
+
+        assertTrue(ex.getMessage().contains("999"));
+        verify(userRepository, never()).delete(any(User.class));
+        verify(activityLogService, never()).logActivity(anyString(), anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("Should support overloaded deleteUser with userId only delegating to SYSTEM")
+    void shouldSupportOverloadedDeleteUserWithUserIdOnly() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
+        when(tipRepository.findByAuthorOrderByCreatedAtDesc(existingUser)).thenReturn(Collections.emptyList());
+        when(projectRepository.findByUserOrderByCreatedAtDesc(existingUser)).thenReturn(Collections.emptyList());
+        when(discussionTopicRepository.findByAuthorOrderByCreatedAtDesc(existingUser)).thenReturn(Collections.emptyList());
+        when(discussionCommentRepository.findByAuthor(existingUser)).thenReturn(Collections.emptyList());
+
+        userService.deleteUser(1L);
+
+        verify(userRepository).delete(existingUser);
+        verify(activityLogService).logActivity(eq("SYSTEM"), eq("DELETE_USER"), contains("existing@example.com"));
     }
 }

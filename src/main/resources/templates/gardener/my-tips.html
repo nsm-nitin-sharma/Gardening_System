@@ -9,12 +9,15 @@
     <aside th:replace="~{fragments/layout :: gardener-sidebar('my-tips')}"></aside>
 
     <main class="content-area">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div class="page-header">
             <div>
                 <h1>My Shared Tips</h1>
-                <p style="color: var(--neutral-500);">Track the moderation approval status of your submitted gardening tips</p>
+                <p class="page-subtitle">Track the moderation approval status of your submitted gardening tips</p>
             </div>
-            <a th:href="@{/gardener/tips/submit}" class="btn btn-primary">+ Share New Tip</a>
+            <a th:href="@{/gardener/tips/submit}" class="btn btn-primary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Share New Tip
+            </a>
         </div>
 
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
@@ -34,7 +37,7 @@
                     </thead>
                     <tbody>
                         <tr th:each="tip : ${tips}">
-                            <td style="font-weight: 600;" th:text="${tip.title}">Title</td>
+                            <td class="font-semibold" th:text="${tip.title}">Title</td>
                             <td th:text="${tip.category}">Category</td>
                             <td>
                                 <span class="badge"
@@ -48,7 +51,7 @@
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(tips)}">
-                            <td colspan="6" style="text-align: center; color: var(--neutral-500); padding: 2.5rem;">
+                            <td colspan="6" class="table-empty-cell">
                                 You have not submitted any gardening tips yet.
                             </td>
                         </tr>

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: header-head('Sign In')}"></head>
-<body style="background: var(--neutral-100);">
+<body class="auth-page">
 
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<main style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 160px); padding: 2rem;">
-    <div class="content-card" style="width: 100%; max-width: 440px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);">
-        <h2 style="text-align: center; margin-bottom: 0.5rem;">Sign In</h2>
-        <p style="text-align: center; color: var(--neutral-500); font-size: 0.9rem; margin-bottom: 1.75rem;">Access your gardening profile and projects</p>
+<main class="auth-wrapper">
+    <div class="content-card auth-card">
+        <h2 class="auth-title">Sign In</h2>
+        <p class="auth-subtitle">Access your gardening profile and projects</p>
 
         <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}">Error</div>
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
@@ -24,14 +24,14 @@
                 <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; margin-top: 0.5rem; font-size: 1rem;">Sign In</button>
+            <button type="submit" class="btn btn-primary btn-auth-submit">Sign In</button>
         </form>
 
-        <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--neutral-200); text-align: center; font-size: 0.88rem; color: var(--neutral-600);">
-            Don't have an account yet? <a th:href="@{/register}" style="font-weight: 600;">Register Here</a>
+        <div class="auth-footer-link">
+            Don't have an account yet? <a th:href="@{/register}" class="font-semibold">Register Here</a>
         </div>
 
-        <div style="margin-top: 1rem; background: var(--neutral-50); padding: 0.75rem; border-radius: var(--radius-md); font-size: 0.8rem; color: var(--neutral-600); border: 1px dashed var(--neutral-300);">
+        <div class="info-callout-dashed">
             <strong>Demo Credentials:</strong><br>
             • Admin: <code>admin@gardening.com</code> / <code>AdminPass123!</code><br>
             • Gardener: <code>gardener@gardening.com</code> / <code>GardenerPass123!</code>

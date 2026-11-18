@@ -9,37 +9,171 @@
     <span th:text="${announcement}">Welcome Announcement</span>
 </div>
 
-<main style="padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; width: 100%;">
+<main class="public-container">
 
     <!-- Hero Section -->
-    <div style="background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%); color: white; padding: 3.5rem 2.5rem; border-radius: var(--radius-lg); margin-bottom: 3rem; text-align: center; box-shadow: var(--shadow-lg);">
-        <h1 style="color: white; font-size: 2.75rem; margin-bottom: 1rem;" th:text="${siteName}">Online Gardening Community</h1>
-        <p style="font-size: 1.15rem; max-width: 750px; margin: 0 auto 2rem auto; color: #d8f3dc; font-weight: 400;">
+    <div class="hero-banner">
+        <h1 class="hero-title" th:text="${siteName}">Online Gardening Community</h1>
+        <p class="hero-subtitle">
             Connect with passionate gardeners, share expert plant care tips, join active community discussions, and track your personal gardening projects from seed to harvest.
         </p>
-        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a th:href="@{/register}" class="btn" style="background: #52b788; color: #081c15; padding: 0.75rem 1.75rem; font-size: 1rem;">Join Community Free</a>
-            <a th:href="@{/tips}" class="btn" style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.75rem 1.75rem; font-size: 1rem;">Explore Gardening Tips</a>
+        <div class="hero-actions">
+            <a th:href="@{/register}" class="btn btn-hero-primary">Join Community Free</a>
+            <a th:href="@{/tips}" class="btn btn-hero-outline">Explore Gardening Tips</a>
         </div>
     </div>
 
-    <!-- Featured Gardening Tips Grid -->
-    <div style="margin-bottom: 3rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <h2>Latest Gardening Tips</h2>
-            <a th:href="@{/tips}" class="btn btn-secondary btn-sm">View All Tips &rarr;</a>
+    <!-- ================================================================= -->
+    <!-- Public Onboarding Guide & Visual Walkthrough Section              -->
+    <!-- ================================================================= -->
+    <section class="onboarding-section">
+        <div class="onboarding-header">
+            <span class="onboarding-pill">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12A10 10 0 0 1 12 2z"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+                Platform Guide &amp; Onboarding
+            </span>
+            <h2 class="onboarding-main-title">How Our Gardening Community Works</h2>
+            <p class="onboarding-subtitle">
+                Follow four simple steps to get the most out of our community-driven platform, whether you cultivate a windowsill herb garden or a full-acre homestead.
+            </p>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
-            <div th:each="tip : ${recentTips}" class="content-card" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
-                <div>
-                    <img th:if="${tip.imageUrl != null and !#strings.isEmpty(tip.imageUrl)}" th:src="${tip.imageUrl}" style="width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 1rem;" alt="Tip photo">
-                    <span class="badge badge-planning" th:text="${tip.category}" style="margin-bottom: 0.5rem;">Category</span>
-                    <h3 style="margin: 0.5rem 0 0.75rem 0;" th:text="${tip.title}">Tip Title</h3>
-                    <p style="color: var(--neutral-600); font-size: 0.92rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;" th:text="${tip.description}">Description preview</p>
+        <div class="onboarding-grid">
+            <!-- Step 1: Discover Community Tips -->
+            <div class="onboarding-card">
+                <div class="onboarding-card-top">
+                    <span class="onboarding-step-num">Step 01</span>
+                    <div class="onboarding-icon-wrap">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                            <path d="M12 6c1.5-1 3-.5 3 1.5 0 1.5-1.5 2.5-3 3"/>
+                            <path d="M12 10.5v-4.5"/>
+                        </svg>
+                    </div>
                 </div>
-                <div style="margin-top: 1.25rem; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); display: flex; justify-content: space-between; align-items: center;">
-                    <small style="color: var(--neutral-500);" th:text="'By ' + ${tip.author.fullName}">Author</small>
+                <h3 class="onboarding-step-title">Discover Community Tips</h3>
+                <p class="onboarding-step-desc">
+                    Browse peer-reviewed advice, natural pest remedies, organic composting techniques, and soil care guides verified by experienced growers.
+                </p>
+                <div class="onboarding-tags">
+                    <span class="onboarding-tag">Pest Control</span>
+                    <span class="onboarding-tag">Soil Care</span>
+                    <span class="onboarding-tag">Composting</span>
+                </div>
+                <a th:href="@{/tips}" class="onboarding-cta">
+                    <span>Explore Tips</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+
+            <!-- Step 2: Track Garden Projects -->
+            <div class="onboarding-card">
+                <div class="onboarding-card-top">
+                    <span class="onboarding-step-num">Step 02</span>
+                    <div class="onboarding-icon-wrap">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 10V3M12 3c-2 2-3 4-3 6a3 3 0 0 0 6 0c0-2-1-4-3-6z"/>
+                            <path d="M7 10h10l-1.5 10a1.5 1.5 0 0 1-1.5 1.5H10A1.5 1.5 0 0 1 8.5 20L7 10z"/>
+                            <line x1="5" y1="10" x2="19" y2="10"/>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="onboarding-step-title">Track Garden Projects</h3>
+                <p class="onboarding-step-desc">
+                    Log plant growth stages, watering notes, and harvest milestones for indoor containers and outdoor raised beds with downloadable PDF reports.
+                </p>
+                <div class="onboarding-tags">
+                    <span class="onboarding-tag">Milestone Logs</span>
+                    <span class="onboarding-tag">Growth Tracking</span>
+                    <span class="onboarding-tag">PDF Reports</span>
+                </div>
+                <a th:href="@{/gardener/projects}" class="onboarding-cta">
+                    <span>Manage Projects</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+
+            <!-- Step 3: Consult Planting Calendar -->
+            <div class="onboarding-card">
+                <div class="onboarding-card-top">
+                    <span class="onboarding-step-num">Step 03</span>
+                    <div class="onboarding-icon-wrap">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                            <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="onboarding-step-title">Seasonal Planting Calendar</h3>
+                <p class="onboarding-step-desc">
+                    Never miss a sowing window. Check our month-by-month guide detailing indoor seed starts, outdoor transplants, and harvest timings.
+                </p>
+                <div class="onboarding-tags">
+                    <span class="onboarding-tag">Sowing Times</span>
+                    <span class="onboarding-tag">Transplanting</span>
+                    <span class="onboarding-tag">Harvest Cycles</span>
+                </div>
+                <a th:href="@{/gardener/planting-calendar}" class="onboarding-cta">
+                    <span>View Calendar</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+
+            <!-- Step 4: Join Community Discussions -->
+            <div class="onboarding-card">
+                <div class="onboarding-card-top">
+                    <span class="onboarding-step-num">Step 04</span>
+                    <div class="onboarding-icon-wrap">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                            <path d="M9.5 11.5c1-1 2-1 3 0s1 2 0 3"/>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="onboarding-step-title">Share Tips &amp; Discuss</h3>
+                <p class="onboarding-step-desc">
+                    Exchange advice, troubleshoot garden pests with peers, share harvest photographs, and connect with fellow enthusiasts in our forums.
+                </p>
+                <div class="onboarding-tags">
+                    <span class="onboarding-tag">Gardener Forum</span>
+                    <span class="onboarding-tag">Q&amp;A Troubleshooting</span>
+                    <span class="onboarding-tag">Share Wisdom</span>
+                </div>
+                <a th:href="@{/discussions}" class="onboarding-cta">
+                    <span>Join Discussions</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Gardening Tips Grid -->
+    <div class="section-block">
+        <div class="section-header">
+            <h2>Latest Gardening Tips</h2>
+            <a th:href="@{/tips}" class="btn btn-secondary btn-sm">
+                <span>View All Tips</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+        </div>
+
+        <div class="cards-grid-320">
+            <div th:each="tip : ${recentTips}" class="content-card flex-card-col interactive-card">
+                <div>
+                    <img th:if="${tip.imageUrl != null and !#strings.isEmpty(tip.imageUrl)}" th:src="${tip.imageUrl}" class="card-thumbnail" alt="Tip photo">
+                    <span class="badge badge-planning mb-1" th:text="${tip.category}">Category</span>
+                    <h3 class="tip-card-title" th:text="${tip.title}">Tip Title</h3>
+                    <p class="tip-card-desc tip-clamp-3" th:text="${tip.description}">Description preview</p>
+                </div>
+                <div class="card-footer-meta">
+                    <small class="author-meta-text" th:text="'By ' + ${tip.author.fullName}">Author</small>
                     <a th:href="@{'/tips/view/' + ${tip.id}}" class="btn btn-primary btn-sm">Read Tip</a>
                 </div>
             </div>
@@ -48,17 +182,20 @@
 
     <!-- Active Community Discussions -->
     <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div class="section-header">
             <h2>Community Discussions</h2>
-            <a th:href="@{/discussions}" class="btn btn-secondary btn-sm">Join Discussions &rarr;</a>
+            <a th:href="@{/discussions}" class="btn btn-secondary btn-sm">
+                <span>Join Discussions</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
         </div>
 
         <div class="content-card">
-            <div th:each="topic : ${recentDiscussions}" style="padding: 1rem 0; border-bottom: 1px solid var(--neutral-200); display: flex; justify-content: space-between; align-items: center;">
+            <div th:each="topic : ${recentDiscussions}" class="list-row-item">
                 <div>
-                    <span class="badge badge-harvesting" th:text="${topic.category}" style="margin-right: 0.5rem;">Category</span>
-                    <a th:href="@{'/discussions/view/' + ${topic.id}}" style="font-weight: 600; font-size: 1.05rem; color: var(--neutral-900);" th:text="${topic.title}">Discussion Topic</a>
-                    <div style="color: var(--neutral-500); font-size: 0.85rem; margin-top: 0.25rem;" th:text="'Posted by ' + ${topic.author.fullName} + ' • ' + ${#lists.size(topic.comments)} + ' Replies'">Stats</div>
+                    <span class="badge badge-harvesting mr-1" th:text="${topic.category}">Category</span>
+                    <a th:href="@{'/discussions/view/' + ${topic.id}}" class="list-row-title" th:text="${topic.title}">Discussion Topic</a>
+                    <div class="list-row-meta" th:text="'Posted by ' + ${topic.author.fullName} + ' • ' + ${#lists.size(topic.comments)} + ' Replies'">Stats</div>
                 </div>
                 <a th:href="@{'/discussions/view/' + ${topic.id}}" class="btn btn-secondary btn-sm">View Discussion</a>
             </div>

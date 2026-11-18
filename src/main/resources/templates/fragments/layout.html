@@ -39,17 +39,21 @@
 
     <div class="user-pill">
         <button id="themeToggleBtn" class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode" aria-label="Toggle dark mode">
-            <span id="themeIcon">&#9790;</span>
+            <span id="themeIcon" class="theme-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </span>
         </button>
         <div sec:authorize="isAnonymous()">
             <a th:href="@{/login}" class="btn btn-primary btn-sm">Sign In</a>
             <a th:href="@{/register}" class="btn btn-secondary btn-sm">Register</a>
         </div>
-        <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center; gap: 0.75rem;">
-            <span sec:authentication="name" style="font-weight: 600;">User</span>
+        <div sec:authorize="isAuthenticated()" class="user-auth-info">
+            <span sec:authentication="name" class="font-semibold">User</span>
             <span sec:authorize="hasRole('ADMIN')" class="role-tag admin">ADMIN</span>
             <span sec:authorize="hasRole('GARDENER')" class="role-tag">GARDENER</span>
-            <form th:action="@{/logout}" method="post" style="margin: 0;">
+            <form th:action="@{/logout}" method="post" class="m-0">
                 <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
             </form>
         </div>
@@ -105,10 +109,14 @@
 <!-- Global Footer -->
 <footer th:fragment="footer">
     <p>&copy; 2026 Online Gardening Community Platform. Academic Project Submission - Clean Java Architecture.</p>
+    <script th:replace="~{fragments/layout :: theme-script}"></script>
 </footer>
 
 <!-- Dark mode toggle script -->
 <script th:fragment="theme-script">
+    var SVG_MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+    var SVG_SUN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+
     /**
      * Toggles between light and dark themes.
      * Saves the user preference to localStorage for persistence across sessions.
@@ -124,9 +132,15 @@
 
     function updateThemeIcon(theme) {
         var icon = document.getElementById('themeIcon');
+        var btn = document.getElementById('themeToggleBtn');
         if (icon) {
             /* Crescent moon for light mode (click to go dark), Sun for dark mode (click to go light) */
-            icon.innerHTML = (theme === 'dark') ? '&#9788;' : '&#9790;';
+            icon.innerHTML = (theme === 'dark') ? SVG_SUN : SVG_MOON;
+        }
+        if (btn) {
+            var label = (theme === 'dark') ? 'Switch to light mode' : 'Switch to dark mode';
+            btn.title = label;
+            btn.setAttribute('aria-label', label);
         }
     }
 

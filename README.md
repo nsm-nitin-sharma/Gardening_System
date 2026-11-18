@@ -90,7 +90,7 @@ This automatically compiles the project, starts the embedded web container with 
 ```powershell
 .\mvnw.cmd spring-boot:run
 ```
-Once started, navigate to: 👉 **`http://localhost:8080`**
+Once started, navigate to: **`http://localhost:8080`**
 
 ### Running the Automated Test Suite (Code Quality & Testing)
 To execute all 27 unit tests and generate test reports:

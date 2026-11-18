@@ -5,23 +5,26 @@
 
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<main class="content-area" style="margin: 0 auto; width: 100%;">
+<main class="content-area public-content-area">
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div class="page-header">
         <div>
             <h1>Community Gardening Tips</h1>
-            <p style="color: var(--neutral-500);">Explore crowd-sourced gardening advice, organic practices, and plant care guides</p>
+            <p class="page-subtitle">Explore crowd-sourced gardening advice, organic practices, and plant care guides</p>
         </div>
         <div sec:authorize="isAuthenticated()">
-            <a th:href="@{/gardener/tips/submit}" class="btn btn-primary">+ Share a Tip</a>
+            <a th:href="@{/gardener/tips/submit}" class="btn btn-primary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Share a Tip
+            </a>
         </div>
     </div>
 
     <!-- Filter & Search Bar -->
-    <div class="content-card" style="margin-bottom: 2rem; padding: 1.25rem;">
-        <form th:action="@{/tips}" method="get" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-            <input type="text" name="q" th:value="${searchQuery}" class="form-control" style="flex: 1; min-width: 240px;" placeholder="Search tips by title or topic...">
-            <select name="category" class="form-control" style="width: 220px;">
+    <div class="content-card filter-card">
+        <form th:action="@{/tips}" method="get" class="filter-bar-form">
+            <input type="text" name="q" th:value="${searchQuery}" class="form-control filter-input-grow" placeholder="Search tips by title or topic...">
+            <select name="category" class="form-control filter-select-fixed">
                 <option value="">All Categories</option>
                 <option value="Vegetables & Herbs" th:selected="${selectedCategory == 'Vegetables & Herbs'}">Vegetables & Herbs</option>
                 <option value="Soil & Fertilization" th:selected="${selectedCategory == 'Soil & Fertilization'}">Soil & Fertilization</option>
@@ -35,21 +38,21 @@
     </div>
 
     <!-- Tips Grid -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
-        <div th:each="tip : ${tips}" class="content-card" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
+    <div class="cards-grid-320">
+        <div th:each="tip : ${tips}" class="content-card flex-card-col interactive-card">
             <div>
-                <img th:if="${tip.imageUrl != null and !#strings.isEmpty(tip.imageUrl)}" th:src="${tip.imageUrl}" style="width: 100%; height: 190px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 1rem;" alt="Tip photo">
-                <span class="badge badge-planning" th:text="${tip.category}" style="margin-bottom: 0.5rem;">Category</span>
-                <h3 style="margin: 0.5rem 0 0.75rem 0;" th:text="${tip.title}">Tip Title</h3>
-                <p style="color: var(--neutral-600); font-size: 0.92rem; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;" th:text="${tip.description}">Description preview</p>
+                <img th:if="${tip.imageUrl != null and !#strings.isEmpty(tip.imageUrl)}" th:src="${tip.imageUrl}" class="card-thumbnail" alt="Tip photo">
+                <span class="badge badge-planning mb-1" th:text="${tip.category}">Category</span>
+                <h3 class="tip-card-title" th:text="${tip.title}">Tip Title</h3>
+                <p class="tip-card-desc tip-clamp-4" th:text="${tip.description}">Description preview</p>
             </div>
-            <div style="margin-top: 1.25rem; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); display: flex; justify-content: space-between; align-items: center;">
-                <small style="color: var(--neutral-500);" th:text="'By ' + ${tip.author.fullName}">Author</small>
+            <div class="card-footer-meta">
+                <small class="author-meta-text" th:text="'By ' + ${tip.author.fullName}">Author</small>
                 <a th:href="@{'/tips/view/' + ${tip.id}}" class="btn btn-primary btn-sm">Read Tip Details</a>
             </div>
         </div>
-        <div th:if="${#lists.isEmpty(tips)}" style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: white; border-radius: var(--radius-lg); border: 1px solid var(--neutral-200);">
-            <p style="color: var(--neutral-500); font-size: 1.1rem;">No approved tips found matching your search criteria.</p>
+        <div th:if="${#lists.isEmpty(tips)}" class="empty-state-card">
+            <p class="empty-state-text">No approved tips found matching your search criteria.</p>
         </div>
     </div>
 

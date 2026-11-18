@@ -8,10 +8,10 @@
 <div class="main-wrapper">
     <aside th:replace="~{fragments/layout :: gardener-sidebar('submit-tip')}"></aside>
 
-    <main class="content-area" style="max-width: 800px;">
-        <div style="margin-bottom: 2rem;">
+    <main class="content-area max-w-800">
+        <div class="page-header-simple">
             <h1>Share a Gardening Tip</h1>
-            <p style="color: var(--neutral-500);">Submit practical gardening advice, plant care tips, or organic techniques</p>
+            <p class="page-subtitle">Submit practical gardening advice, plant care tips, or organic techniques</p>
         </div>
 
         <div class="content-card">
@@ -39,10 +39,13 @@
 
                 <div class="form-group">
                     <label class="form-label" for="description">Detailed Description & Instructions *</label>
-                    <textarea id="description" name="description" class="form-control" style="min-height: 180px;" placeholder="Explain the technique, materials required, and observed benefits..." required></textarea>
+                    <textarea id="description" name="description" class="form-control form-textarea-xl" placeholder="Explain the technique, materials required, and observed benefits..." required></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Submit Gardening Tip</button>
+                <button type="submit" class="btn btn-primary">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/></svg>
+                    <span>Submit Gardening Tip</span>
+                </button>
             </form>
         </div>
     </main>

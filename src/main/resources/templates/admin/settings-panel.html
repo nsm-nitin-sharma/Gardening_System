@@ -8,19 +8,19 @@
 <div class="main-wrapper">
     <aside th:replace="~{fragments/layout :: admin-sidebar('settings')}"></aside>
 
-    <main class="content-area" style="max-width: 850px;">
-        <div style="margin-bottom: 2rem;">
+    <main class="content-area max-w-800">
+        <div class="page-header-simple">
             <h1>System Settings Configuration</h1>
-            <p style="color: var(--neutral-500);">Configure platform-wide settings, user limits, and moderation flags</p>
+            <p class="page-subtitle">Configure platform-wide settings, user limits, and moderation flags</p>
         </div>
 
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">Success</div>
 
         <div class="content-card">
             <form th:action="@{/admin/settings/update}" method="post">
-                <div th:each="setting : ${settings}" class="form-group" style="padding-bottom: 1.25rem; border-bottom: 1px solid var(--neutral-100); margin-bottom: 1.25rem;">
+                <div th:each="setting : ${settings}" class="form-group setting-row">
                     <label class="form-label" th:text="${setting.settingKey}">Setting Key</label>
-                    <small style="color: var(--neutral-500); display: block; margin-bottom: 0.5rem;" th:text="${setting.description}">Setting description</small>
+                    <small class="page-subtitle mb-1 d-block" th:text="${setting.description}">Setting description</small>
 
                     <input th:if="${setting.settingKey != 'ANNOUNCEMENT_BANNER'}" type="text" th:name="${setting.settingKey}" class="form-control" th:value="${setting.settingValue}">
                     <textarea th:if="${setting.settingKey == 'ANNOUNCEMENT_BANNER'}" th:name="${setting.settingKey}" class="form-control" th:text="${setting.settingValue}"></textarea>

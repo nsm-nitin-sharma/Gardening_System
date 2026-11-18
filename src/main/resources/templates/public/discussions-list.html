@@ -5,22 +5,25 @@
 
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<main class="content-area" style="margin: 0 auto; width: 100%;">
+<main class="content-area public-content-area">
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div class="page-header">
         <div>
             <h1>Gardening Community Discussions</h1>
-            <p style="color: var(--neutral-500);">Ask questions, trade advice, and discuss seasonal gardening topics</p>
+            <p class="page-subtitle">Ask questions, trade advice, and discuss seasonal gardening topics</p>
         </div>
         <div sec:authorize="isAuthenticated()">
-            <a th:href="@{/gardener/discussions/new}" class="btn btn-primary">+ Start a New Discussion</a>
+            <a th:href="@{/gardener/discussions/new}" class="btn btn-primary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Start a New Discussion
+            </a>
         </div>
     </div>
 
     <!-- Category Filter Bar -->
-    <div class="content-card" style="margin-bottom: 2rem; padding: 1.25rem;">
-        <form th:action="@{/discussions}" method="get" style="display: flex; gap: 1rem; align-items: center;">
-            <select name="category" class="form-control" style="width: 280px;">
+    <div class="content-card filter-card">
+        <form th:action="@{/discussions}" method="get" class="filter-bar-form">
+            <select name="category" class="form-control filter-select-lg">
                 <option value="">All Topics</option>
                 <option value="Pest Management" th:selected="${selectedCategory == 'Pest Management'}">Pest Management</option>
                 <option value="Plant Diseases" th:selected="${selectedCategory == 'Plant Diseases'}">Plant Diseases</option>
@@ -35,15 +38,15 @@
 
     <!-- Discussions List -->
     <div class="content-card">
-        <div th:each="topic : ${topics}" style="padding: 1.25rem 0; border-bottom: 1px solid var(--neutral-200); display: flex; justify-content: space-between; align-items: center;">
+        <div th:each="topic : ${topics}" class="list-row-item">
             <div>
-                <span class="badge badge-harvesting" th:text="${topic.category}" style="margin-bottom: 0.4rem;">Category</span>
-                <a th:href="@{'/discussions/view/' + ${topic.id}}" style="font-size: 1.15rem; font-weight: 600; color: var(--neutral-900); display: block;" th:text="${topic.title}">Discussion Title</a>
-                <div style="color: var(--neutral-500); font-size: 0.88rem; margin-top: 0.35rem;" th:text="'Started by ' + ${topic.author.fullName} + ' • ' + ${#temporals.format(topic.createdAt, 'MMM dd, yyyy')} + ' • ' + ${#lists.size(topic.comments)} + ' Responses'">Metadata</div>
+                <span class="badge badge-harvesting mb-xs" th:text="${topic.category}">Category</span>
+                <a th:href="@{'/discussions/view/' + ${topic.id}}" class="list-row-title" th:text="${topic.title}">Discussion Title</a>
+                <div class="list-row-meta mt-xs" th:text="'Started by ' + ${topic.author.fullName} + ' • ' + ${#temporals.format(topic.createdAt, 'MMM dd, yyyy')} + ' • ' + ${#lists.size(topic.comments)} + ' Responses'">Metadata</div>
             </div>
             <a th:href="@{'/discussions/view/' + ${topic.id}}" class="btn btn-secondary btn-sm">View Discussion</a>
         </div>
-        <div th:if="${#lists.isEmpty(topics)}" style="text-align: center; padding: 2.5rem; color: var(--neutral-500);">
+        <div th:if="${#lists.isEmpty(topics)}" class="empty-state-box">
             No community discussion topics found in this category. Be the first to start a topic!
         </div>
     </div>

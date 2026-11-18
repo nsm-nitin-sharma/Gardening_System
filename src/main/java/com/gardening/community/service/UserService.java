@@ -1,8 +1,16 @@
 package com.gardening.community.service;
 
 import com.gardening.community.dto.UserRegistrationDto;
+import com.gardening.community.model.DiscussionComment;
+import com.gardening.community.model.DiscussionTopic;
+import com.gardening.community.model.GardeningProject;
 import com.gardening.community.model.Role;
+import com.gardening.community.model.Tip;
 import com.gardening.community.model.User;
+import com.gardening.community.repository.DiscussionCommentRepository;
+import com.gardening.community.repository.DiscussionTopicRepository;
+import com.gardening.community.repository.GardeningProjectRepository;
+import com.gardening.community.repository.TipRepository;
 import com.gardening.community.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,11 +29,25 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ActivityLogService activityLogService;
+    private final TipRepository tipRepository;
+    private final GardeningProjectRepository projectRepository;
+    private final DiscussionTopicRepository discussionTopicRepository;
+    private final DiscussionCommentRepository discussionCommentRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ActivityLogService activityLogService) {
+    public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       ActivityLogService activityLogService,
+                       TipRepository tipRepository,
+                       GardeningProjectRepository projectRepository,
+                       DiscussionTopicRepository discussionTopicRepository,
+                       DiscussionCommentRepository discussionCommentRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.activityLogService = activityLogService;
+        this.tipRepository = tipRepository;
+        this.projectRepository = projectRepository;
+        this.discussionTopicRepository = discussionTopicRepository;
+        this.discussionCommentRepository = discussionCommentRepository;
     }
 
     public User registerGardener(UserRegistrationDto dto) {
@@ -96,13 +118,39 @@ public class UserService {
         return updated;
     }
 
+    public void deleteUser(Long userId) {
+        deleteUser(userId, "SYSTEM");
+    }
+
     public void deleteUser(Long userId, String adminEmail) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User ID not found: " + userId));
 
         String targetEmail = user.getEmail();
+        String actor = (adminEmail != null && !adminEmail.isBlank()) ? adminEmail : "SYSTEM";
+
+        List<Tip> tips = tipRepository.findByAuthorOrderByCreatedAtDesc(user);
+        if (!tips.isEmpty()) {
+            tipRepository.deleteAll(tips);
+        }
+
+        List<GardeningProject> projects = projectRepository.findByUserOrderByCreatedAtDesc(user);
+        if (!projects.isEmpty()) {
+            projectRepository.deleteAll(projects);
+        }
+
+        List<DiscussionTopic> topics = discussionTopicRepository.findByAuthorOrderByCreatedAtDesc(user);
+        if (!topics.isEmpty()) {
+            discussionTopicRepository.deleteAll(topics);
+        }
+
+        List<DiscussionComment> comments = discussionCommentRepository.findByAuthor(user);
+        if (!comments.isEmpty()) {
+            discussionCommentRepository.deleteAll(comments);
+        }
+
         userRepository.delete(user);
-        activityLogService.logActivity(adminEmail, "DELETE_USER", "Deleted user account: " + targetEmail);
+        activityLogService.logActivity(actor, "DELETE_USER", "Deleted user account: " + targetEmail);
     }
 
     public long getTotalUserCount() {
