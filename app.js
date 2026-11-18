@@ -4,6 +4,446 @@
  * Enables zero-dependency standalone execution directly from file:// or any browser.
  */
 
+// ==========================================================================
+// Centralized Vector Iconography Dictionary (Strictly 0 Emojis)
+// ==========================================================================
+
+const ICONS = {
+  // Brand Sprout Logo
+  brandSprout: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22V12" /><path d="M12 12C12 7 8 4 3 4c0 6 4 9 9 8z" fill="currentColor" fill-opacity="0.25" /><path d="M12 12c0-5 4-8 9-8 0 6-4 9-9 8z" fill="currentColor" fill-opacity="0.35" /><path d="M7 22h10" /></svg>`,
+
+  // Celestial Theme Toggles
+  sun: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`,
+  moon: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`,
+
+  // Navigation & Directional Chevrons
+  chevronRight: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>`,
+  chevronLeft: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>`,
+  arrowRight: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`,
+  arrowLeft: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>`,
+
+  // Modal Close Cross
+  close: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`,
+
+  // Header Tour Guide Compass
+  compass: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" fill-opacity="0.25"></polygon></svg>`,
+
+  // Domain Feature Icons
+  calendar: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`,
+  clipboard: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>`,
+  checkCircle: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+  printer: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>`,
+  lightbulb: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"></path></svg>`,
+  chat: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`,
+  shield: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`,
+  user: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`,
+  plus: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`,
+  leaf: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 4 13a7 7 0 0 1 7-7c4.5 0 8 2.5 9 8-1 5.5-4.5 6-9 6z"></path><path d="M11 20v-7"></path></svg>`,
+  community: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
+  sprout: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20h10M12 20V10M12 10c0-4.418-3.582-8-8-8 0 4.418 3.582 8 8 8zm0 0c0-4.418 3.582-8 8-8 0 4.418-3.582 8-8 8z"></path></svg>`,
+  seedling: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22v-9"></path><path d="M9 7a5 5 0 0 1 8 5c-3 1-6-1-8-5z"></path><path d="M15 7a5 5 0 0 0-8 5c3 1 6-1 8-5z"></path></svg>`
+};
+
+function getIcon(name, size = 18, extraClass = '') {
+  const raw = ICONS[name] || '';
+  if (!raw) return '';
+  return raw
+    .replace(/width="[0-9]+"/, `width="${size}"`)
+    .replace(/height="[0-9]+"/, `height="${size}"`)
+    .replace('<svg ', `<svg class="svg-icon svg-${name} ${extraClass}" `);
+}
+
+// ==========================================================================
+// 5-Step Visual Walkthrough Configuration (ONBOARDING_STEPS)
+// ==========================================================================
+
+const ONBOARDING_STEPS = [
+  {
+    step: 1,
+    badge: 'Welcome to GreenThumb',
+    title: 'Botanical Community Hub',
+    subtitle: 'Zero-Dependency Horticultural Intelligence',
+    description: 'Welcome to a collaborative platform for gardening enthusiasts, botanists, and urban growers. Engineered with a resilient zero-dependency architecture, all your data, planting schedules, and garden logs run and persist locally in your browser via the file:// protocol.',
+    heroIcon: 'sprout',
+    features: [
+      {
+        icon: 'leaf',
+        title: 'Offline Resilient',
+        text: 'Zero external network dependencies needed. Pure local persistence engine.'
+      },
+      {
+        icon: 'community',
+        title: 'Botanical Network',
+        text: 'Exchange verified care tips, companion planting guides, and organic solutions.'
+      },
+      {
+        icon: 'shield',
+        title: 'Role-Based Control',
+        text: 'Dedicated portals for both active gardeners and platform administrators.'
+      }
+    ],
+    actionText: 'Next: Planting Calendar'
+  },
+  {
+    step: 2,
+    badge: 'Step 2: Planning',
+    title: 'Seasonal Planting Matrix',
+    subtitle: '12-Month Interactive Sowing & Harvest Schedule',
+    description: 'Never miss a critical sowing or transplant window. The interactive matrix maps out month-by-month cultivation schedules across 15 essential edible vegetables, herbs, and companion crops.',
+    heroIcon: 'calendar',
+    features: [
+      {
+        icon: 'seedling',
+        title: 'Direct Sow & Indoors',
+        text: 'Green tags indicate ideal indoor seedling start dates and direct bed sowing.'
+      },
+      {
+        icon: 'sprout',
+        title: 'Outdoor Transplant',
+        text: 'Blue markers indicate hardened transplant timing for outdoor garden beds.'
+      },
+      {
+        icon: 'sun',
+        title: 'Peak Harvest Windows',
+        text: 'Amber tags highlight maximum yield periods for optimal vegetable nutrition.'
+      }
+    ],
+    actionText: 'Next: Garden Projects'
+  },
+  {
+    step: 3,
+    badge: 'Step 3: Growth Tracking',
+    title: 'Garden Plot & Milestone Tracker',
+    subtitle: 'Chronicle Every Seedling, Pruning, and Harvest',
+    description: 'Organize your raised beds, vertical planters, hydroponic reservoirs, and container gardens. Log dated milestone observations and generate formatted PDF harvest reports in one click.',
+    heroIcon: 'clipboard',
+    features: [
+      {
+        icon: 'clipboard',
+        title: 'Plot Management',
+        text: 'Track statuses seamlessly from PLANNING through IN_PROGRESS to COMPLETED.'
+      },
+      {
+        icon: 'checkCircle',
+        title: 'Growth Milestones',
+        text: 'Record germination dates, leaf counts, feeding cycles, and pest notes.'
+      },
+      {
+        icon: 'printer',
+        title: 'One-Click PDF Export',
+        text: 'Built-in print stylesheet outputs clean, professional garden journal sheets.'
+      }
+    ],
+    actionText: 'Next: Knowledge Sharing'
+  },
+  {
+    step: 4,
+    badge: 'Step 4: Knowledge Hub',
+    title: 'Community Exchange & Moderation',
+    subtitle: 'Peer-Reviewed Advice and Interactive Forum',
+    description: 'Access curated horticultural advice across Companion Planting, Pest Control, Soil Health, and Irrigation. All contributions undergo administrator peer review to maintain quality.',
+    heroIcon: 'chat',
+    features: [
+      {
+        icon: 'lightbulb',
+        title: 'Categorized Guides',
+        text: 'Filter instant advice by topic with responsive keyword search.'
+      },
+      {
+        icon: 'chat',
+        title: 'Discussion Forum',
+        text: 'Diagnose plant diseases and exchange constructive community answers.'
+      },
+      {
+        icon: 'shield',
+        title: 'Peer Moderation',
+        text: 'Admins review submissions with transparent feedback notes.'
+      }
+    ],
+    actionText: 'Next: Quick-Start Access'
+  },
+  {
+    step: 5,
+    badge: 'Step 5: Quick-Start Access',
+    title: 'Instant Evaluation Profiles',
+    subtitle: '1-Click Demo Logins & Guest Exploration',
+    description: 'Experience all authenticated features immediately. Select a pre-seeded account profile to test gardener plot tracking or admin moderation, or continue freely as a guest.',
+    heroIcon: 'user',
+    demoProfiles: [
+      {
+        role: 'GARDENER',
+        name: 'Sample Gardener',
+        email: 'gardener@gardening.com',
+        pass: 'GardenerPass123!',
+        desc: 'Manage personal garden beds, record growth milestones, test the planting calendar, and submit tips.',
+        btnText: 'Log In as Gardener',
+        badgeClass: 'badge-success'
+      },
+      {
+        role: 'ADMIN',
+        name: 'Platform Administrator',
+        email: 'admin@gardening.com',
+        pass: 'AdminPass123!',
+        desc: 'Access the admin moderation queue, review pending tips, toggle user accounts, and update site policies.',
+        btnText: 'Log In as Administrator',
+        badgeClass: 'badge-danger'
+      }
+    ],
+    actionText: 'Get Started'
+  }
+];
+
+let currentOnboardingIndex = 0;
+
+function checkOnboardingAutoLaunch() {
+  try {
+    const seen = localStorage.getItem('GARDENING_COMMUNITY_ONBOARDING_SEEN');
+    if (!seen && (!db.data || !db.data.onboardingSeen)) {
+      setTimeout(() => {
+        openOnboarding(0);
+      }, 400);
+    }
+  } catch (e) {
+    console.warn('LocalStorage check for onboarding failed', e);
+  }
+}
+
+function openOnboarding(stepIndex = 0) {
+  currentOnboardingIndex = Math.max(0, Math.min(stepIndex, ONBOARDING_STEPS.length - 1));
+  renderOnboardingModal();
+  const overlay = document.getElementById('onboardingOverlay');
+  if (overlay) {
+    overlay.classList.add('active');
+  }
+}
+
+function closeOnboarding(markSeen = true) {
+  const overlay = document.getElementById('onboardingOverlay');
+  if (overlay) {
+    overlay.classList.remove('active');
+  }
+  if (markSeen) {
+    try {
+      localStorage.setItem('GARDENING_COMMUNITY_ONBOARDING_SEEN', 'true');
+    } catch (e) {}
+    if (db && db.data) {
+      db.data.onboardingSeen = true;
+      db.save();
+    }
+  }
+}
+
+function nextOnboardingStep() {
+  if (currentOnboardingIndex < ONBOARDING_STEPS.length - 1) {
+    currentOnboardingIndex++;
+    renderOnboardingModal();
+  } else {
+    closeOnboarding(true);
+  }
+}
+
+function prevOnboardingStep() {
+  if (currentOnboardingIndex > 0) {
+    currentOnboardingIndex--;
+    renderOnboardingModal();
+  }
+}
+
+function goToOnboardingStep(index) {
+  currentOnboardingIndex = index;
+  renderOnboardingModal();
+}
+
+function onboardingQuickLogin(email, password) {
+  closeOnboarding(true);
+  const res = loginUser(email, password);
+  if (res.success) {
+    showToast(`Welcome, ${res.user.fullName}!`, 'success');
+    if (res.user.role === 'ADMIN') {
+      navigate('admin-dashboard');
+    } else {
+      navigate('gardener-dashboard');
+    }
+  }
+}
+
+function renderOnboardingModal() {
+  const slot = document.getElementById('onboardingSlot');
+  if (!slot) return;
+
+  const step = ONBOARDING_STEPS[currentOnboardingIndex];
+  const total = ONBOARDING_STEPS.length;
+  const progressPercent = Math.round(((currentOnboardingIndex + 1) / total) * 100);
+
+  let bodyContent = '';
+
+  if (step.features) {
+    bodyContent = `
+      <div class="onboarding-features-grid">
+        ${step.features.map(f => `
+          <div class="onboarding-feature-item">
+            <div class="onboarding-feature-icon">${ICONS[f.icon] || ICONS.sprout}</div>
+            <div class="onboarding-feature-title">${f.title}</div>
+            <div class="onboarding-feature-text">${f.text}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else if (step.demoProfiles) {
+    bodyContent = `
+      <div class="onboarding-profiles-grid">
+        ${step.demoProfiles.map(p => `
+          <div class="onboarding-profile-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <span class="badge ${p.badgeClass}">${p.role}</span>
+              <span style="font-size:0.75rem; color:var(--text-subtle);">${p.email}</span>
+            </div>
+            <h4 style="font-size:1.05rem; font-weight:700; margin-bottom:0.35rem;">${p.name}</h4>
+            <p style="font-size:0.84rem; color:var(--text-muted); line-height:1.4; margin-bottom:0.85rem;">${p.desc}</p>
+            <button class="btn btn-primary btn-sm" style="width:100%;" onclick="onboardingQuickLogin('${p.email}', '${p.pass}')">
+              ${p.btnText}
+            </button>
+          </div>
+        `).join('')}
+      </div>
+      <div style="text-align:center; margin-top:1rem;">
+        <button class="btn btn-outline-primary btn-sm" onclick="closeOnboarding(true)">
+          Explore Platform Anonymously as Guest ${ICONS.arrowRight}
+        </button>
+      </div>
+    `;
+  }
+
+  slot.innerHTML = `
+    <!-- Onboarding Progress Bar Header -->
+    <div class="onboarding-header">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+        <span class="badge badge-success">${step.badge}</span>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+          <button class="btn btn-secondary btn-sm" style="font-size:0.78rem; padding:0.25rem 0.65rem;" onclick="closeOnboarding(true)">Skip</button>
+          <button class="modal-close" onclick="closeOnboarding(true)" aria-label="Close tour">${ICONS.close}</button>
+        </div>
+      </div>
+      <div class="onboarding-progress-track">
+        <div class="onboarding-progress-fill" style="width: ${progressPercent}%;"></div>
+      </div>
+    </div>
+
+    <!-- Onboarding Step Content -->
+    <div class="onboarding-body">
+      <h2 class="onboarding-title" id="onboardingModalTitle">${step.title}</h2>
+      <div class="onboarding-subtitle">${step.subtitle}</div>
+      <p class="onboarding-description">${step.description}</p>
+      ${bodyContent}
+    </div>
+
+    <!-- Onboarding Navigation Footer -->
+    <div class="onboarding-footer">
+      <div>
+        ${currentOnboardingIndex > 0 ? `
+          <button class="btn btn-secondary btn-sm" onclick="prevOnboardingStep()">
+            ${ICONS.chevronLeft} Previous
+          </button>
+        ` : `
+          <span style="font-size:0.8rem; color:var(--text-subtle);">Step 1 of ${total}</span>
+        `}
+      </div>
+
+      <div class="onboarding-dots">
+        ${ONBOARDING_STEPS.map((_, idx) => `
+          <button class="onboarding-dot ${idx === currentOnboardingIndex ? 'active' : (idx < currentOnboardingIndex ? 'completed' : '')}" onclick="goToOnboardingStep(${idx})" aria-label="Go to step ${idx + 1}"></button>
+        `).join('')}
+      </div>
+
+      <div>
+        <button class="btn btn-primary btn-sm" onclick="nextOnboardingStep()">
+          ${step.actionText} ${ICONS.chevronRight}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// ==========================================================================
+// Non-Blocking Toast Notification System
+// ==========================================================================
+
+function getOrCreateToastContainer() {
+  let c = document.getElementById('toastContainer');
+  if (!c) {
+    c = document.createElement('div');
+    c.id = 'toastContainer';
+    c.className = 'toast-container';
+    c.setAttribute('aria-live', 'polite');
+    document.body.appendChild(c);
+  }
+  return c;
+}
+
+function showToast(message, type = 'info', duration = 3500) {
+  const container = getOrCreateToastContainer();
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.setAttribute('role', 'alert');
+
+  let iconSvg = ICONS.lightbulb;
+  if (type === 'success') iconSvg = ICONS.checkCircle;
+  else if (type === 'danger' || type === 'error') iconSvg = ICONS.shield;
+  else if (type === 'warning') iconSvg = ICONS.lightbulb;
+
+  toast.innerHTML = `
+    <div class="toast-icon">${iconSvg}</div>
+    <div class="toast-message">${message}</div>
+    <button class="toast-close" onclick="dismissToast(this.parentElement)" aria-label="Close notification">${ICONS.close}</button>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('toast-show');
+  }, 10);
+
+  const timer = setTimeout(() => {
+    dismissToast(toast);
+  }, duration);
+
+  toast._dismissTimer = timer;
+}
+
+function dismissToast(toast) {
+  if (!toast || toast._isDismissing) return;
+  toast._isDismissing = true;
+  if (toast._dismissTimer) clearTimeout(toast._dismissTimer);
+  toast.classList.remove('toast-show');
+  toast.classList.add('toast-hiding');
+  setTimeout(() => {
+    if (toast.parentElement) toast.parentElement.removeChild(toast);
+  }, 260);
+}
+
+// Demo Authentication Helpers
+function quickFillLogin(email, password) {
+  const eField = document.getElementById('loginEmail');
+  const pField = document.getElementById('loginPassword');
+  if (eField) eField.value = email;
+  if (pField) pField.value = password;
+}
+
+function quickLogin(email, password) {
+  const res = loginUser(email, password);
+  if (res.success) {
+    showToast(`Welcome back, ${res.user.fullName}!`, 'success');
+    closeModal();
+    if (res.user.role === 'ADMIN') {
+      navigate('admin-dashboard');
+    } else {
+      navigate('gardener-dashboard');
+    }
+  } else {
+    showToast(res.message, 'danger');
+  }
+}
+
 const STORAGE_KEY = 'GARDENING_COMMUNITY_DB_V2';
 
 // Default Database Seed
@@ -11,6 +451,7 @@ function getDefaultData() {
   return {
     currentUser: null,
     theme: 'light',
+    onboardingSeen: false,
     users: [
       {
         id: 1,
@@ -571,76 +1012,138 @@ function renderHomeView() {
   const user = getCurrentUser();
 
   return `
-    <div style="margin-bottom: 2.5rem; text-align: center; padding: 2.5rem 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);">
-      <span class="badge badge-success" style="margin-bottom: 1rem; padding: 0.35rem 0.85rem; font-size: 0.8rem;">Clean Java & Enterprise Architecture</span>
-      <h1 style="font-size: 2.35rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.85rem; color: var(--text-main);">
-        Online Gardening Community Platform
-      </h1>
-      <p style="max-width: 680px; margin: 0 auto 1.75rem auto; color: var(--text-muted); font-size: 1.05rem;">
-        A collaborative web environment for gardening enthusiasts to exchange verified care tips, track personal container and garden plots, and engage with community specialists.
-      </p>
-      <div style="display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap;">
-        ${user ? `
-          <button class="btn btn-primary" onclick="navigate('${user.role === 'ADMIN' ? 'admin-dashboard' : 'gardener-dashboard'}')">Go to Dashboard &rarr;</button>
-          <button class="btn btn-secondary" onclick="navigate('gardener-calendar')">View Planting Calendar</button>
-        ` : `
-          <button class="btn btn-primary" onclick="navigate('register')">Join Community Free</button>
-          <button class="btn btn-secondary" onclick="navigate('login')">Sign In to Account</button>
-        `}
+    <!-- Bespoke Hero Section -->
+    <div class="hero-wrapper">
+      <div class="hero-content">
+        <div class="hero-pill">
+          <span>FloraHub &bull; The Modern Gardening Ecosystem</span>
+        </div>
+        <h1 class="hero-title">
+          Cultivate thriving gardens, <span>track crop milestones</span>, and grow together.
+        </h1>
+        <p class="hero-description">
+          A dedicated digital workspace for plant enthusiasts. Plan raised beds, journal seedling observations, and exchange peer-reviewed botanical advice in real-time across the globe.
+        </p>
+        <div class="hero-actions">
+          ${user ? `
+            <button class="btn btn-primary" onclick="navigate('${user.role === 'ADMIN' ? 'admin-dashboard' : 'gardener-dashboard'}')">
+              Open My Workspace &rarr;
+            </button>
+            <button class="btn btn-secondary" onclick="navigate('gardener-projects')">
+              My Garden Projects
+            </button>
+            <button class="btn btn-secondary" onclick="navigate('gardener-calendar')">
+              Planting Calendar
+            </button>
+          ` : `
+            <button class="btn btn-primary" onclick="navigate('register')">
+              Create Free Gardener Profile &rarr;
+            </button>
+            <button class="btn btn-secondary" onclick="navigate('login')">
+              Sign In to Account
+            </button>
+            <button class="btn btn-secondary" onclick="navigate('gardener-calendar')">
+              Explore 12-Month Calendar
+            </button>
+          `}
+        </div>
       </div>
     </div>
 
-    <!-- Announcement Banner -->
+    <!-- Interactive 3-Step Guided Onboarding -->
+    <div style="margin-bottom: 2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 1.25rem;">
+        <div>
+          <span style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--primary-600);">New to FloraHub?</span>
+          <h2 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">How the Platform Works</h2>
+        </div>
+        <span style="font-size:0.85rem; color:var(--text-muted);">Three simple steps to manage your green space</span>
+      </div>
+
+      <div class="onboarding-grid">
+        <div class="onboarding-card">
+          <span class="onboarding-step-num">Step 01 &bull; Plan</span>
+          <h3 class="onboarding-card-title">Garden Plot Tracker</h3>
+          <p class="onboarding-card-text">
+            Create tracking boards for balcony planters, raised beds, or indoor setups. Set expected harvest windows and track companion plant pairings.
+          </p>
+          <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-projects')">Explore Projects &rarr;</button>
+        </div>
+
+        <div class="onboarding-card">
+          <span class="onboarding-step-num">Step 02 &bull; Journal</span>
+          <h3 class="onboarding-card-title">Milestone Observations</h3>
+          <p class="onboarding-card-text">
+            Log sprout dates, pest treatments, soil feedings, and harvests. Generate one-click branded PDF reports to document your seasonal crop yield.
+          </p>
+          <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-calendar')">View Calendar &rarr;</button>
+        </div>
+
+        <div class="onboarding-card">
+          <span class="onboarding-step-num">Step 03 &bull; Collaborate</span>
+          <h3 class="onboarding-card-title">Live Cloud Community</h3>
+          <p class="onboarding-card-text">
+            Submit verified organic tips, diagnose plant diseases in community forums, and enjoy real-time multi-device cloud synchronization powered by Firebase.
+          </p>
+          <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-tips')">Browse Tips &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Announcement Bar -->
     ${db.data.settings.maintenanceNotice ? `
-      <div style="padding: 0.85rem 1.25rem; background: var(--primary-50); border: 1px solid var(--primary-200); border-radius: var(--radius-sm); margin-bottom: 2rem; color: var(--primary-900); font-size: 0.9rem; font-weight: 500;">
-        <strong>Notice:</strong> ${db.data.settings.maintenanceNotice}
+      <div style="padding: 1rem 1.5rem; background: rgba(16, 185, 129, 0.08); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: 2rem; color: var(--text-primary); font-size: 0.92rem; display: flex; align-items: center; justify-content: space-between;">
+        <div><strong>Announcement:</strong> ${db.data.settings.maintenanceNotice}</div>
+        <span class="badge badge-success">Live Global Cloud Active</span>
       </div>
     ` : ''}
 
-    <!-- Quick Stats -->
+    <!-- Live Platform Statistics -->
     <div class="stats-grid">
       <div class="stat-card">
-        <span class="stat-label">Active Gardeners</span>
-        <span class="stat-value">${db.data.users.length}</span>
-        <span class="stat-caption">Registered plant enthusiasts</span>
+        <div class="stat-label">Active Gardeners</div>
+        <div class="stat-value">${db.data.users.length}</div>
+        <div class="stat-caption">Community members sharing advice</div>
       </div>
       <div class="stat-card">
-        <span class="stat-label">Shared Tips</span>
-        <span class="stat-value">${approvedTips.length}</span>
-        <span class="stat-caption">Moderated community guides</span>
+        <div class="stat-label">Published Guides</div>
+        <div class="stat-value">${approvedTips.length}</div>
+        <div class="stat-caption">Peer-reviewed horticultural tips</div>
       </div>
       <div class="stat-card">
-        <span class="stat-label">Active Projects</span>
-        <span class="stat-value">${db.data.projects.length}</span>
-        <span class="stat-caption">Plots & container gardens tracked</span>
+        <div class="stat-label">Tracked Projects</div>
+        <div class="stat-value">${db.data.projects.length}</div>
+        <div class="stat-caption">Active plots & balcony planters</div>
       </div>
       <div class="stat-card">
-        <span class="stat-label">Automated Tests</span>
-        <span class="stat-value">27</span>
-        <span class="stat-caption">100% Passing Unit Suites</span>
+        <div class="stat-label">Automated Unit Tests</div>
+        <div class="stat-value">27 / 27</div>
+        <div class="stat-caption">100% Passing backend test suites</div>
       </div>
     </div>
 
-    <!-- Featured Approved Tips -->
+    <!-- Featured Verified Advice -->
     <div class="card">
       <div class="card-header">
         <div>
-          <h2 class="card-title">Featured Gardening Knowledge</h2>
-          <p class="card-subtitle">Peer-reviewed advice for pest control, soil care, and crop yields</p>
+          <h2 class="card-title">Featured Botanical Knowledge</h2>
+          <p class="card-subtitle">Expert-approved advice for organic pest control, soil composting, and higher yields</p>
         </div>
         <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-tips')">Browse All Tips &rarr;</button>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
         ${approvedTips.map(tip => `
-          <div style="border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 1.25rem; background: var(--bg-subtle);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+          <div style="border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.5rem; background: var(--bg-subtle); transition: var(--transition);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
               <span class="badge badge-info">${tip.category}</span>
-              <span style="font-size:0.75rem; color:var(--text-subtle);">${tip.createdAt.substring(0, 10)}</span>
+              <span style="font-size:0.78rem; color:var(--text-muted);">${tip.createdAt.substring(0, 10)}</span>
             </div>
-            <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.45rem;">${tip.title}</h3>
-            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.85rem;">${tip.description}</p>
-            <div style="font-size: 0.78rem; color: var(--text-subtle);">Shared by <strong>${tip.authorName}</strong></div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; color:var(--text-primary);">${tip.title}</h3>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.55; margin-bottom: 1.25rem;">${tip.description}</p>
+            <div style="font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+              Submitted by <strong>${tip.authorName}</strong>
+            </div>
           </div>
         `).join('')}
       </div>
