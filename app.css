@@ -709,6 +709,40 @@ textarea.form-control {
   }
 }
 
+/* Cloud Status Indicator */
+.cloud-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+
+.cloud-status-badge .status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--text-subtle);
+  transition: var(--transition);
+}
+
+.cloud-status-badge.connected {
+  background-color: var(--success-bg);
+  color: var(--success);
+  border-color: rgba(22, 163, 74, 0.35);
+}
+
+.cloud-status-badge.connected .status-dot {
+  background-color: var(--success);
+  box-shadow: 0 0 8px rgba(22, 163, 74, 0.8);
+}
+
 /* Footer */
 .site-footer {
   margin-top: auto;

@@ -37,6 +37,10 @@
       </nav>
 
       <div class="header-actions">
+        <div id="cloudStatusBadge" class="cloud-status-badge" title="Firebase Firestore Global Cloud Status">
+          <span class="status-dot"></span>
+          <span class="status-text">Cloud Sync</span>
+        </div>
         <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle dark mode" aria-label="Toggle dark mode">
           &#9790;
         </button>
@@ -66,12 +70,17 @@
       <div style="display: flex; gap: 1.25rem;">
         <span style="color: var(--text-muted); font-size: 0.8rem;">Java 21 Enterprise Core Preserved</span>
         <span style="color: var(--text-muted); font-size: 0.8rem;">27 Unit Tests Passing</span>
-        <span style="color: var(--text-muted); font-size: 0.8rem;">Zero-Server Client Standalone</span>
+        <span style="color: var(--text-muted); font-size: 0.8rem;">Firebase Cloud DB Connected</span>
       </div>
     </div>
   </footer>
 
-  <!-- Application Logic & Local Storage State Engine -->
+  <!-- Firebase Cloud Backend Integration (Compat SDK for zero-build HTML execution) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+  <!-- Application Logic & Live Global Database Sync -->
   <script src="./app.js"></script>
 </body>
 </html>

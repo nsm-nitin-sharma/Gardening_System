@@ -194,6 +194,10 @@ class AppDatabase {
 
   save(dataToSave) {
     if (dataToSave) this.data = dataToSave;
+    this.saveLocalOnly();
+  }
+
+  saveLocalOnly() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
     } catch (e) {
@@ -211,7 +215,153 @@ class AppDatabase {
     };
     this.data.activityLogs.unshift(log);
     this.save();
+    if (typeof syncDocToFirestore === 'function') {
+      syncDocToFirestore('activityLogs', log.id, log);
+    }
   }
+}
+
+// ==========================================================================
+// Live Firebase Cloud Firestore Integration (Florahub Project)
+// ==========================================================================
+
+const firebaseConfig = {
+  apiKey: "FIREBASE_API_KEY_PLACEHOLDER",
+  authDomain: "florahub-6a9ea.firebaseapp.com",
+  projectId: "florahub-6a9ea",
+  storageBucket: "florahub-6a9ea.firebasestorage.app",
+  messagingSenderId: "21612276084",
+  appId: "1:21612276084:web:3893bd944dae1ea18d6421",
+  measurementId: "G-KJBSW641JM"
+};
+
+let firebaseApp = null;
+let firestoreDb = null;
+let isCloudConnected = false;
+
+function initFirebase() {
+  try {
+    if (typeof firebase !== 'undefined' && firebase.initializeApp) {
+      if (!firebase.apps.length) {
+        firebaseApp = firebase.initializeApp(firebaseConfig);
+      } else {
+        firebaseApp = firebase.app();
+      }
+      firestoreDb = firebase.firestore();
+      isCloudConnected = true;
+      updateCloudStatusUI(true);
+      console.log('[Firebase] Successfully connected to live Firestore project:', firebaseConfig.projectId);
+      setupFirestoreRealtimeListeners();
+    } else {
+      console.warn('[Firebase] SDK not loaded; operating in local mode.');
+      updateCloudStatusUI(false);
+    }
+  } catch (err) {
+    console.warn('[Firebase] Initialization error:', err);
+    isCloudConnected = false;
+    updateCloudStatusUI(false);
+  }
+}
+
+function updateCloudStatusUI(connected) {
+  const badge = document.getElementById('cloudStatusBadge');
+  if (!badge) return;
+  if (connected) {
+    badge.className = 'cloud-status-badge connected';
+    badge.innerHTML = '<span class="status-dot"></span><span class="status-text">Cloud Live (Firebase)</span>';
+    badge.title = 'Connected to Firebase Firestore (' + firebaseConfig.projectId + ')';
+  } else {
+    badge.className = 'cloud-status-badge';
+    badge.innerHTML = '<span class="status-dot"></span><span class="status-text">Local Storage</span>';
+    badge.title = 'Offline / Local fallback';
+  }
+}
+
+function syncDocToFirestore(collectionName, docId, data) {
+  if (!firestoreDb) return;
+  try {
+    firestoreDb.collection(collectionName).doc(String(docId)).set(data, { merge: true })
+      .catch(err => console.warn('[Firestore Write Error]', collectionName, docId, err));
+  } catch (e) {
+    console.warn('[Firestore Exception]', e);
+  }
+}
+
+function seedFirestoreCollection(collectionName, items) {
+  if (!firestoreDb || !Array.isArray(items)) return;
+  items.forEach(item => {
+    if (item && item.id) {
+      syncDocToFirestore(collectionName, item.id, item);
+    }
+  });
+}
+
+function setupFirestoreRealtimeListeners() {
+  if (!firestoreDb) return;
+
+  // Real-time listener for tips (shared live across all users)
+  firestoreDb.collection('tips').onSnapshot(snapshot => {
+    if (!snapshot.empty) {
+      const cloudTips = [];
+      snapshot.forEach(doc => cloudTips.push(doc.data()));
+      cloudTips.sort((a, b) => (b.id || 0) - (a.id || 0));
+      db.data.tips = cloudTips;
+      db.saveLocalOnly();
+      if (['gardener-tips', 'home', 'admin-moderation'].includes(currentActiveView)) {
+        navigate(currentActiveView, currentActiveParam);
+      }
+    } else if (db.data.tips && db.data.tips.length > 0) {
+      seedFirestoreCollection('tips', db.data.tips);
+    }
+  }, err => console.warn('[Firestore Tips Listener]', err));
+
+  // Real-time listener for projects
+  firestoreDb.collection('projects').onSnapshot(snapshot => {
+    if (!snapshot.empty) {
+      const cloudProjects = [];
+      snapshot.forEach(doc => cloudProjects.push(doc.data()));
+      cloudProjects.sort((a, b) => (b.id || 0) - (a.id || 0));
+      db.data.projects = cloudProjects;
+      db.saveLocalOnly();
+      if (['gardener-projects', 'gardener-dashboard', 'gardener-project-detail'].includes(currentActiveView)) {
+        navigate(currentActiveView, currentActiveParam);
+      }
+    } else if (db.data.projects && db.data.projects.length > 0) {
+      seedFirestoreCollection('projects', db.data.projects);
+    }
+  }, err => console.warn('[Firestore Projects Listener]', err));
+
+  // Real-time listener for discussions
+  firestoreDb.collection('discussions').onSnapshot(snapshot => {
+    if (!snapshot.empty) {
+      const cloudDiscussions = [];
+      snapshot.forEach(doc => cloudDiscussions.push(doc.data()));
+      cloudDiscussions.sort((a, b) => (b.id || 0) - (a.id || 0));
+      db.data.discussions = cloudDiscussions;
+      db.saveLocalOnly();
+      if (currentActiveView === 'gardener-discussions') {
+        navigate(currentActiveView, currentActiveParam);
+      }
+    } else if (db.data.discussions && db.data.discussions.length > 0) {
+      seedFirestoreCollection('discussions', db.data.discussions);
+    }
+  }, err => console.warn('[Firestore Discussions Listener]', err));
+
+  // Real-time listener for users
+  firestoreDb.collection('users').onSnapshot(snapshot => {
+    if (!snapshot.empty) {
+      const cloudUsers = [];
+      snapshot.forEach(doc => cloudUsers.push(doc.data()));
+      cloudUsers.sort((a, b) => (b.id || 0) - (a.id || 0));
+      db.data.users = cloudUsers;
+      db.saveLocalOnly();
+      if (currentActiveView === 'admin-users') {
+        navigate(currentActiveView, currentActiveParam);
+      }
+    } else if (db.data.users && db.data.users.length > 0) {
+      seedFirestoreCollection('users', db.data.users);
+    }
+  }, err => console.warn('[Firestore Users Listener]', err));
 }
 
 const db = new AppDatabase();
@@ -271,6 +421,9 @@ function registerUser(fullName, email, password, bio, experience, location) {
   db.data.currentUser = newUser;
   db.logActivity(newUser.email, 'USER_REGISTER', 'Created gardener account and auto-authenticated.');
   db.save();
+  if (typeof syncDocToFirestore === 'function') {
+    syncDocToFirestore('users', newUser.id, newUser);
+  }
   return { success: true, user: newUser };
 }
 
@@ -305,7 +458,12 @@ function updateThemeIcon(theme) {
 // View Router & Rendering
 // ==========================================================================
 
+let currentActiveView = 'home';
+let currentActiveParam = null;
+
 function navigate(viewName, param = null) {
+  currentActiveView = viewName;
+  currentActiveParam = param;
   const container = document.getElementById('appRoot');
   if (!container) return;
 
@@ -864,6 +1022,9 @@ function updateProjectStatus(projectId, newStatus) {
     p.status = newStatus;
     db.logActivity(getCurrentUser()?.email || 'gardener@gardening.com', 'UPDATE_PROJECT_STATUS', `Updated project ${p.title} status to ${newStatus}`);
     db.save();
+    if (typeof syncDocToFirestore === 'function') {
+      syncDocToFirestore('projects', p.id, p);
+    }
     navigate('gardener-project-detail', projectId);
   }
 }
@@ -1111,6 +1272,9 @@ function addCommentToTopic(topicId) {
     });
     db.logActivity(user.email, 'ADD_COMMENT', `Replied to topic: ${topic.title}`);
     db.save();
+    if (typeof syncDocToFirestore === 'function') {
+      syncDocToFirestore('discussions', topic.id, topic);
+    }
     navigate('gardener-discussions');
   }
 }
@@ -1174,6 +1338,9 @@ function handleProfileUpdate(e) {
 
   db.logActivity(user.email, 'UPDATE_PROFILE', 'Updated personal profile details.');
   db.save();
+  if (typeof syncDocToFirestore === 'function' && target) {
+    syncDocToFirestore('users', target.id, target);
+  }
   alert('Profile updated successfully!');
   navigate('gardener-profile');
 }
@@ -1342,6 +1509,9 @@ function toggleUserStatus(userId) {
     u.active = !u.active;
     db.logActivity('admin@gardening.com', 'TOGGLE_USER_STATUS', `Toggled user ${u.email} active to ${u.active}`);
     db.save();
+    if (typeof syncDocToFirestore === 'function') {
+      syncDocToFirestore('users', u.id, u);
+    }
     navigate('admin-users');
   }
 }
@@ -1352,6 +1522,9 @@ function toggleUserRole(userId) {
     u.role = u.role === 'ADMIN' ? 'GARDENER' : 'ADMIN';
     db.logActivity('admin@gardening.com', 'UPDATE_USER_ROLE', `Changed user ${u.email} role to ${u.role}`);
     db.save();
+    if (typeof syncDocToFirestore === 'function') {
+      syncDocToFirestore('users', u.id, u);
+    }
     navigate('admin-users');
   }
 }
@@ -1420,6 +1593,9 @@ function moderateTip(tipId, status) {
     tip.moderationNote = note;
     db.logActivity('admin@gardening.com', 'MODERATE_TIP', `Tip "${tip.title}" set to ${status}`);
     db.save();
+    if (typeof syncDocToFirestore === 'function') {
+      syncDocToFirestore('tips', tip.id, tip);
+    }
     navigate('admin-moderation');
   }
 }
@@ -1474,6 +1650,9 @@ function handleSettingsSave(e) {
 
   db.logActivity('admin@gardening.com', 'UPDATE_SETTINGS', 'Updated platform configuration values.');
   db.save();
+  if (typeof syncDocToFirestore === 'function') {
+    syncDocToFirestore('settings', 'config', db.data.settings);
+  }
   alert('System settings saved successfully!');
   navigate('admin-settings');
 }
@@ -1580,6 +1759,9 @@ function handleNewProjectSubmit(e) {
   db.data.projects.unshift(newProj);
   db.logActivity(user.email, 'CREATE_PROJECT', `Created project: ${newProj.title}`);
   db.save();
+  if (typeof syncDocToFirestore === 'function') {
+    syncDocToFirestore('projects', newProj.id, newProj);
+  }
   closeModal();
   navigate('gardener-projects');
 }
@@ -1623,6 +1805,9 @@ function handleAddLogSubmit(e, projectId) {
     });
     db.logActivity(getCurrentUser()?.email || 'gardener@gardening.com', 'ADD_PROJECT_LOG', `Added milestone to ${proj.title}`);
     db.save();
+    if (typeof syncDocToFirestore === 'function') {
+      syncDocToFirestore('projects', proj.id, proj);
+    }
     closeModal();
     navigate('gardener-project-detail', projectId);
   }
@@ -1681,6 +1866,9 @@ function handleNewTipSubmit(e) {
   db.data.tips.unshift(newTip);
   db.logActivity(user.email, 'SUBMIT_TIP', `Submitted tip: ${newTip.title} (${newTip.status})`);
   db.save();
+  if (typeof syncDocToFirestore === 'function') {
+    syncDocToFirestore('tips', newTip.id, newTip);
+  }
   closeModal();
   navigate('gardener-tips');
 }
@@ -1735,6 +1923,9 @@ function handleNewDiscussionSubmit(e) {
   db.data.discussions.unshift(newDisc);
   db.logActivity(user.email, 'CREATE_DISCUSSION', `Posted discussion topic: ${newDisc.title}`);
   db.save();
+  if (typeof syncDocToFirestore === 'function') {
+    syncDocToFirestore('discussions', newDisc.id, newDisc);
+  }
   closeModal();
   navigate('gardener-discussions');
 }
@@ -1750,4 +1941,5 @@ function closeModal() {
 window.addEventListener('DOMContentLoaded', () => {
   initTheme();
   navigate('home');
+  initFirebase();
 });
