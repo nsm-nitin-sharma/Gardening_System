@@ -17,3 +17,9 @@ target/
 data/
 *.log
 *.sqlite
+
+# Secrets & Local Environment Credentials (NEVER push to git)
+firebase-config.js
+*.env
+*.env.local
+

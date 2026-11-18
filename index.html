@@ -44,9 +44,9 @@
       </nav>
 
       <div class="header-actions">
-        <div id="cloudStatusBadge" class="cloud-status-badge connected" title="Connected to Firebase Firestore (florahub-6a9ea)">
+        <div id="cloudStatusBadge" class="cloud-status-badge connecting" onclick="if(window.florahubSyncAllToCloud) window.florahubSyncAllToCloud()" style="cursor:pointer;" title="Click to trigger manual cloud synchronization">
           <span class="status-dot"></span>
-          <span class="status-text">Cloud Live (Firebase)</span>
+          <span class="status-text">Connecting Cloud...</span>
         </div>
         <button id="tourGuideBtn" class="btn btn-tour" onclick="openOnboarding(0)" title="Explore Tour & Platform Guide" aria-label="Explore Tour & Platform Guide">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -95,6 +95,8 @@
     </div>
   </footer>
 
+  <!-- Local Firebase Config (Optional; excluded from Git) -->
+  <script src="./firebase-config.js"></script>
   <!-- Application Logic & Local Storage Database -->
   <script src="./app.js?v=florahub_live"></script>
 </body>

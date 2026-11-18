@@ -262,6 +262,38 @@ body {
   animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+.cloud-status-badge.blocked {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="dark"] .cloud-status-badge.blocked {
+  background: rgba(239, 68, 68, 0.18);
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+.cloud-status-badge.blocked .status-dot {
+  background-color: #ef4444;
+}
+
+.cloud-status-badge.connecting {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+[data-theme="dark"] .cloud-status-badge.connecting {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.cloud-status-badge.connecting .status-dot {
+  background-color: #f59e0b;
+}
+
 @keyframes pulse-ring {
   0% { transform: scale(0.9); opacity: 0.8; }
   50% { transform: scale(1.6); opacity: 0; }
