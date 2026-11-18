@@ -2,6 +2,9 @@ package com.gardening.community.controller;
 
 import com.gardening.community.model.*;
 import com.gardening.community.service.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +16,8 @@ import java.util.List;
 
 /**
  * Controller managing Gardener actions including profile updates, tip submissions,
- * discussion creation, and personal gardening project tracking.
+ * discussion creation, personal gardening project tracking, planting calendar,
+ * and PDF project report generation.
  */
 @Controller
 @RequestMapping("/gardener")
@@ -23,12 +27,16 @@ public class GardenerController {
     private final TipService tipService;
     private final DiscussionService discussionService;
     private final ProjectService projectService;
+    private final PdfReportService pdfReportService;
 
-    public GardenerController(UserService userService, TipService tipService, DiscussionService discussionService, ProjectService projectService) {
+    public GardenerController(UserService userService, TipService tipService,
+                              DiscussionService discussionService, ProjectService projectService,
+                              PdfReportService pdfReportService) {
         this.userService = userService;
         this.tipService = tipService;
         this.discussionService = discussionService;
         this.projectService = projectService;
+        this.pdfReportService = pdfReportService;
     }
 
     @GetMapping("/dashboard")
@@ -153,6 +161,34 @@ public class GardenerController {
         projectService.updateProjectStatus(projectId, status, principal.getName());
         redirectAttributes.addFlashAttribute("successMessage", "Project status updated to " + status.name());
         return "redirect:/gardener/projects/view/" + projectId;
+    }
+
+    /**
+     * Displays the seasonal planting calendar reference page.
+     */
+    @GetMapping("/planting-calendar")
+    public String plantingCalendar() {
+        return "gardener/planting-calendar";
+    }
+
+    /**
+     * Generates and downloads a PDF report for a specific gardening project.
+     * The report includes project details, plant types, and all logged milestones.
+     */
+    @GetMapping("/projects/{id}/report")
+    public ResponseEntity<byte[]> downloadProjectReport(@PathVariable("id") Long id, Principal principal) {
+        GardeningProject project = projectService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid project ID: " + id));
+
+        List<ProjectLog> logs = projectService.getProjectLogs(project);
+        byte[] pdfBytes = pdfReportService.generateProjectReport(project, logs);
+
+        String filename = "Project_Report_" + project.getTitle().replaceAll("[^a-zA-Z0-9]", "_") + ".pdf";
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
     }
 
     @GetMapping("/discussions/new")
