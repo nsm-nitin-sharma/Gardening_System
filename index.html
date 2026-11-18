@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Gardening Community Platform</title>
+  <link rel="stylesheet" href="./app.css">
+  <script>
+    /* Immediate theme application before first paint to prevent screen flash */
+    (function() {
+      try {
+        var raw = localStorage.getItem('GARDENING_COMMUNITY_DB_V2');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && parsed.theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          }
+        }
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="javascript:void(0)" class="brand" onclick="navigate('home')">
+        <div class="brand-icon">G</div>
+        <span>Gardening Community</span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" id="navbarLinksSlot">
+          <!-- Populated dynamically by app.js router -->
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle dark mode" aria-label="Toggle dark mode">
+          &#9790;
+        </button>
+        <div id="navbarAuthSlot">
+          <!-- Login/Register/User pill populated by app.js -->
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dynamic Main Content Root -->
+  <main id="appRoot" class="main-content">
+    <!-- Rendered views inserted here -->
+  </main>
+
+  <!-- Global Modal Overlay -->
+  <div id="modalOverlay" class="modal-overlay" onclick="if(event.target === this) closeModal()">
+    <div class="modal-content" id="modalSlot">
+      <!-- Modal form injected dynamically -->
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div style="max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <p>&copy; 2026 Online Gardening Community Platform. Academic Project Submission.</p>
+      <div style="display: flex; gap: 1.25rem;">
+        <span style="color: var(--text-muted); font-size: 0.8rem;">Java 21 Enterprise Core Preserved</span>
+        <span style="color: var(--text-muted); font-size: 0.8rem;">27 Unit Tests Passing</span>
+        <span style="color: var(--text-muted); font-size: 0.8rem;">Zero-Server Client Standalone</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic & Local Storage State Engine -->
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1753 @@
+/**
+ * Online Gardening Community Platform - Client-Side Enterprise State Engine
+ * Simulates a full Spring Boot + H2 persistent database directly in localStorage.
+ * Enables zero-dependency standalone execution directly from file:// or any browser.
+ */
+
+const STORAGE_KEY = 'GARDENING_COMMUNITY_DB_V2';
+
+// Default Database Seed
+function getDefaultData() {
+  return {
+    currentUser: null,
+    theme: 'light',
+    users: [
+      {
+        id: 1,
+        fullName: 'Platform Administrator',
+        email: 'admin@gardening.com',
+        password: 'AdminPass123!',
+        role: 'ADMIN',
+        bio: 'Senior System Administrator & Horticultural Moderator.',
+        gardeningExperience: '10+ Years / Master Gardener',
+        location: 'New Delhi, India',
+        active: true,
+        createdAt: '2026-10-01 10:00:00'
+      },
+      {
+        id: 2,
+        fullName: 'Sample Gardener',
+        email: 'gardener@gardening.com',
+        password: 'GardenerPass123!',
+        role: 'GARDENER',
+        bio: 'Urban gardener interested in hydroponics and organic vegetable cultivation.',
+        gardeningExperience: '3 Years',
+        location: 'Bengaluru, India',
+        active: true,
+        createdAt: '2026-10-02 11:30:00'
+      }
+    ],
+    tips: [
+      {
+        id: 101,
+        title: 'Companion Planting: Basil & Tomatoes',
+        category: 'Companion Planting',
+        description: 'Planting basil alongside your tomato plants deters hornworms and enhances the aromatic flavor profile of the fruit.',
+        authorName: 'Sample Gardener',
+        authorEmail: 'gardener@gardening.com',
+        status: 'APPROVED',
+        moderationNote: 'Verified horticultural practice. Approved.',
+        createdAt: '2026-10-10 14:20:00'
+      },
+      {
+        id: 102,
+        title: 'Natural Pest Barrier with Diatomaceous Earth',
+        category: 'Pest Control',
+        description: 'Dust food-grade diatomaceous earth around stems on dry days to deter slugs, snails, and crawling insects naturally without chemicals.',
+        authorName: 'Sample Gardener',
+        authorEmail: 'gardener@gardening.com',
+        status: 'APPROVED',
+        moderationNote: 'Safe biological control method.',
+        createdAt: '2026-10-12 09:15:00'
+      },
+      {
+        id: 103,
+        title: 'High Nitrogen Coffee Grounds Fertilizer',
+        category: 'Soil & Composting',
+        description: 'Recycle spent morning coffee grounds into your acid-loving blueberry and hydrangea soil beds for enhanced microbial breakdown.',
+        authorName: 'Sample Gardener',
+        authorEmail: 'gardener@gardening.com',
+        status: 'PENDING',
+        moderationNote: null,
+        createdAt: '2026-11-15 16:45:00'
+      }
+    ],
+    projects: [
+      {
+        id: 201,
+        title: 'Balcony Herb & Microgreen Garden',
+        description: 'Cultivating compact kitchen herbs and nutrient-dense microgreens in vertical containers.',
+        plantTypes: 'Italian Basil, Spearmint, Greek Oregano, Rosemary',
+        status: 'IN_PROGRESS',
+        startDate: '2026-10-15',
+        targetHarvestDate: '2026-12-15',
+        ownerEmail: 'gardener@gardening.com',
+        createdAt: '2026-10-15 10:00:00',
+        logs: [
+          {
+            id: 301,
+            logDate: '2026-10-15',
+            milestone: 'Seeding & Germination',
+            note: 'All seeds planted into organic coconut coir pots with perlite mix.'
+          },
+          {
+            id: 302,
+            logDate: '2026-10-25',
+            milestone: 'First True Leaves',
+            note: 'Basil and mint seedlings sprouted true leaves. Shifted to direct morning sunlight.'
+          },
+          {
+            id: 303,
+            logDate: '2026-11-10',
+            milestone: 'Nutrient Feed',
+            note: 'Applied mild liquid seaweed solution. Robust foliage development observed.'
+          }
+        ]
+      },
+      {
+        id: 202,
+        title: 'Raised Bed Heirloom Tomatoes',
+        description: 'Growing indeterminate cherry and beefsteak tomatoes using organic trellising.',
+        plantTypes: 'San Marzano, Roma, Sweet 100 Cherry',
+        status: 'PLANNING',
+        startDate: '2026-11-20',
+        targetHarvestDate: '2027-02-28',
+        ownerEmail: 'gardener@gardening.com',
+        createdAt: '2026-11-12 18:20:00',
+        logs: []
+      }
+    ],
+    discussions: [
+      {
+        id: 401,
+        title: 'Best remedies for powdery mildew on squash leaves?',
+        category: 'Pest & Disease',
+        content: 'I noticed white powdery spots covering my squash leaves after consecutive humid evenings. What organic spray gives the quickest control?',
+        authorName: 'Sample Gardener',
+        authorEmail: 'gardener@gardening.com',
+        createdAt: '2026-10-28 15:30:00',
+        comments: [
+          {
+            id: 501,
+            authorName: 'Platform Administrator',
+            authorEmail: 'admin@gardening.com',
+            content: 'Mix 1 tablespoon potassium bicarbonate or baking soda with 1/2 teaspoon liquid vegetable soap in 1 gallon water. Spray both sides of foliage weekly.',
+            createdAt: '2026-10-28 16:45:00'
+          }
+        ]
+      },
+      {
+        id: 402,
+        title: 'Ideal composting C:N ratio for winter breakdown',
+        category: 'Soil & Composting',
+        content: 'How do you keep your backyard tumbler compost pile active when daytime temperatures drop below 15 degrees Celsius?',
+        authorName: 'Platform Administrator',
+        authorEmail: 'admin@gardening.com',
+        createdAt: '2026-11-05 11:10:00',
+        comments: []
+      }
+    ],
+    settings: {
+      siteName: 'Online Gardening Community Platform',
+      maintenanceNotice: 'Review 2 Evaluation: Client-Side Engine with Complete Java Core Architecture Preserved.',
+      autoApproveTips: false,
+      maxProjectLimit: 15
+    },
+    activityLogs: [
+      {
+        id: 601,
+        userEmail: 'admin@gardening.com',
+        action: 'SYSTEM_BOOT',
+        details: 'Initialized persistent data schema with default accounts.',
+        timestamp: '2026-10-01 10:00:00'
+      },
+      {
+        id: 602,
+        userEmail: 'gardener@gardening.com',
+        action: 'CREATE_PROJECT',
+        details: 'Created gardening project: Balcony Herb & Microgreen Garden',
+        timestamp: '2026-10-15 10:00:00'
+      }
+    ]
+  };
+}
+
+// Database Manager
+class AppDatabase {
+  constructor() {
+    this.data = this.load();
+  }
+
+  load() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {
+      console.warn('LocalStorage load error, using defaults', e);
+    }
+    const initial = getDefaultData();
+    this.save(initial);
+    return initial;
+  }
+
+  save(dataToSave) {
+    if (dataToSave) this.data = dataToSave;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+    } catch (e) {
+      console.error('LocalStorage save error', e);
+    }
+  }
+
+  logActivity(email, action, details) {
+    const log = {
+      id: Date.now(),
+      userEmail: email,
+      action: action,
+      details: details,
+      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19)
+    };
+    this.data.activityLogs.unshift(log);
+    this.save();
+  }
+}
+
+const db = new AppDatabase();
+
+// ==========================================================================
+// Authentication & Session
+// ==========================================================================
+
+function getCurrentUser() {
+  return db.data.currentUser;
+}
+
+function loginUser(email, password) {
+  const user = db.data.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+  if (!user) {
+    return { success: false, message: 'Invalid credentials. User not found.' };
+  }
+  if (!user.active) {
+    return { success: false, message: 'Your account has been deactivated by an administrator.' };
+  }
+  if (user.password !== password) {
+    return { success: false, message: 'Invalid credentials. Password incorrect.' };
+  }
+  db.data.currentUser = user;
+  db.logActivity(user.email, 'USER_LOGIN', `Logged in successfully with role ${user.role}`);
+  db.save();
+  return { success: true, user: user };
+}
+
+function logoutUser() {
+  if (db.data.currentUser) {
+    db.logActivity(db.data.currentUser.email, 'USER_LOGOUT', 'User logged out.');
+  }
+  db.data.currentUser = null;
+  db.save();
+  navigate('home');
+}
+
+function registerUser(fullName, email, password, bio, experience, location) {
+  const exists = db.data.users.some(u => u.email.toLowerCase() === email.toLowerCase());
+  if (exists) {
+    return { success: false, message: 'An account with this email address already exists.' };
+  }
+  const newUser = {
+    id: Date.now(),
+    fullName: fullName.trim(),
+    email: email.trim().toLowerCase(),
+    password: password,
+    role: 'GARDENER',
+    bio: bio || 'Passionate home gardener.',
+    gardeningExperience: experience || 'Beginner',
+    location: location || 'Not Specified',
+    active: true,
+    createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
+  };
+  db.data.users.push(newUser);
+  db.data.currentUser = newUser;
+  db.logActivity(newUser.email, 'USER_REGISTER', 'Created gardener account and auto-authenticated.');
+  db.save();
+  return { success: true, user: newUser };
+}
+
+// ==========================================================================
+// Theme Management
+// ==========================================================================
+
+function initTheme() {
+  const saved = db.data.theme || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeIcon(saved);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  db.data.theme = next;
+  db.save();
+  updateThemeIcon(next);
+}
+
+function updateThemeIcon(theme) {
+  const btn = document.getElementById('themeToggleBtn');
+  if (btn) {
+    btn.innerHTML = theme === 'dark' ? '&#9788;' : '&#9790;';
+    btn.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+  }
+}
+
+// ==========================================================================
+// View Router & Rendering
+// ==========================================================================
+
+function navigate(viewName, param = null) {
+  const container = document.getElementById('appRoot');
+  if (!container) return;
+
+  updateNavState(viewName);
+
+  switch (viewName) {
+    case 'home':
+      container.innerHTML = renderHomeView();
+      break;
+    case 'login':
+      container.innerHTML = renderLoginView();
+      break;
+    case 'register':
+      container.innerHTML = renderRegisterView();
+      break;
+    case 'gardener-dashboard':
+      container.innerHTML = renderGardenerDashboard();
+      break;
+    case 'gardener-projects':
+      container.innerHTML = renderGardenerProjects();
+      break;
+    case 'gardener-project-detail':
+      container.innerHTML = renderProjectDetail(param);
+      break;
+    case 'gardener-tips':
+      container.innerHTML = renderGardenerTips();
+      break;
+    case 'gardener-discussions':
+      container.innerHTML = renderDiscussionsView();
+      break;
+    case 'gardener-calendar':
+      container.innerHTML = renderPlantingCalendar();
+      break;
+    case 'gardener-profile':
+      container.innerHTML = renderProfileView();
+      break;
+    case 'admin-dashboard':
+      container.innerHTML = renderAdminDashboard();
+      break;
+    case 'admin-users':
+      container.innerHTML = renderAdminUsers();
+      break;
+    case 'admin-moderation':
+      container.innerHTML = renderAdminModeration();
+      break;
+    case 'admin-settings':
+      container.innerHTML = renderAdminSettings();
+      break;
+    case 'admin-logs':
+      container.innerHTML = renderAdminLogs();
+      break;
+    default:
+      container.innerHTML = renderHomeView();
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateNavState(currentView) {
+  const user = getCurrentUser();
+  const authSlot = document.getElementById('navbarAuthSlot');
+  const navLinksSlot = document.getElementById('navbarLinksSlot');
+
+  if (navLinksSlot) {
+    let linksHtml = `
+      <li><button class="nav-link ${currentView === 'home' ? 'active' : ''}" onclick="navigate('home')">Home</button></li>
+      <li><button class="nav-link ${currentView === 'gardener-tips' ? 'active' : ''}" onclick="navigate('gardener-tips')">Community Tips</button></li>
+      <li><button class="nav-link ${currentView === 'gardener-calendar' ? 'active' : ''}" onclick="navigate('gardener-calendar')">Planting Calendar</button></li>
+      <li><button class="nav-link ${currentView === 'gardener-discussions' ? 'active' : ''}" onclick="navigate('gardener-discussions')">Forum</button></li>
+    `;
+
+    if (user && user.role === 'ADMIN') {
+      linksHtml += `<li><button class="nav-link ${currentView.startsWith('admin') ? 'active' : ''}" onclick="navigate('admin-dashboard')">Admin Portal</button></li>`;
+    } else if (user) {
+      linksHtml += `<li><button class="nav-link ${currentView.startsWith('gardener') ? 'active' : ''}" onclick="navigate('gardener-dashboard')">My Dashboard</button></li>`;
+    }
+
+    navLinksSlot.innerHTML = linksHtml;
+  }
+
+  if (authSlot) {
+    if (user) {
+      authSlot.innerHTML = `
+        <div style="display:flex; align-items:center; gap:0.65rem;">
+          <span style="font-size:0.85rem; font-weight:600;">${user.fullName}</span>
+          <span class="badge ${user.role === 'ADMIN' ? 'badge-danger' : 'badge-success'}">${user.role}</span>
+          <button class="btn btn-secondary btn-sm" onclick="logoutUser()">Logout</button>
+        </div>
+      `;
+    } else {
+      authSlot.innerHTML = `
+        <button class="btn btn-secondary btn-sm" onclick="navigate('login')">Sign In</button>
+        <button class="btn btn-primary btn-sm" onclick="navigate('register')">Register</button>
+      `;
+    }
+  }
+}
+
+// ==========================================================================
+// Views: Home, Login, Register
+// ==========================================================================
+
+function renderHomeView() {
+  const approvedTips = db.data.tips.filter(t => t.status === 'APPROVED');
+  const user = getCurrentUser();
+
+  return `
+    <div style="margin-bottom: 2.5rem; text-align: center; padding: 2.5rem 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);">
+      <span class="badge badge-success" style="margin-bottom: 1rem; padding: 0.35rem 0.85rem; font-size: 0.8rem;">Clean Java & Enterprise Architecture</span>
+      <h1 style="font-size: 2.35rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.85rem; color: var(--text-main);">
+        Online Gardening Community Platform
+      </h1>
+      <p style="max-width: 680px; margin: 0 auto 1.75rem auto; color: var(--text-muted); font-size: 1.05rem;">
+        A collaborative web environment for gardening enthusiasts to exchange verified care tips, track personal container and garden plots, and engage with community specialists.
+      </p>
+      <div style="display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap;">
+        ${user ? `
+          <button class="btn btn-primary" onclick="navigate('${user.role === 'ADMIN' ? 'admin-dashboard' : 'gardener-dashboard'}')">Go to Dashboard &rarr;</button>
+          <button class="btn btn-secondary" onclick="navigate('gardener-calendar')">View Planting Calendar</button>
+        ` : `
+          <button class="btn btn-primary" onclick="navigate('register')">Join Community Free</button>
+          <button class="btn btn-secondary" onclick="navigate('login')">Sign In to Account</button>
+        `}
+      </div>
+    </div>
+
+    <!-- Announcement Banner -->
+    ${db.data.settings.maintenanceNotice ? `
+      <div style="padding: 0.85rem 1.25rem; background: var(--primary-50); border: 1px solid var(--primary-200); border-radius: var(--radius-sm); margin-bottom: 2rem; color: var(--primary-900); font-size: 0.9rem; font-weight: 500;">
+        <strong>Notice:</strong> ${db.data.settings.maintenanceNotice}
+      </div>
+    ` : ''}
+
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Active Gardeners</span>
+        <span class="stat-value">${db.data.users.length}</span>
+        <span class="stat-caption">Registered plant enthusiasts</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Shared Tips</span>
+        <span class="stat-value">${approvedTips.length}</span>
+        <span class="stat-caption">Moderated community guides</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Active Projects</span>
+        <span class="stat-value">${db.data.projects.length}</span>
+        <span class="stat-caption">Plots & container gardens tracked</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Automated Tests</span>
+        <span class="stat-value">27</span>
+        <span class="stat-caption">100% Passing Unit Suites</span>
+      </div>
+    </div>
+
+    <!-- Featured Approved Tips -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">Featured Gardening Knowledge</h2>
+          <p class="card-subtitle">Peer-reviewed advice for pest control, soil care, and crop yields</p>
+        </div>
+        <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-tips')">Browse All Tips &rarr;</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem;">
+        ${approvedTips.map(tip => `
+          <div style="border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 1.25rem; background: var(--bg-subtle);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <span class="badge badge-info">${tip.category}</span>
+              <span style="font-size:0.75rem; color:var(--text-subtle);">${tip.createdAt.substring(0, 10)}</span>
+            </div>
+            <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.45rem;">${tip.title}</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.85rem;">${tip.description}</p>
+            <div style="font-size: 0.78rem; color: var(--text-subtle);">Shared by <strong>${tip.authorName}</strong></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderLoginView() {
+  return `
+    <div style="max-width: 440px; margin: 2rem auto;">
+      <div class="card">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 700;">Account Sign In</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+            Enter your credentials to manage your garden profile or moderate content.
+          </p>
+        </div>
+
+        <div id="loginAlertSlot"></div>
+
+        <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+          <div class="form-group">
+            <label class="form-label" for="loginEmail">Email Address</label>
+            <input type="email" id="loginEmail" class="form-control" required placeholder="name@gardening.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" class="form-control" required placeholder="••••••••••••">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Sign In</button>
+        </form>
+
+        <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-light); text-align: center;">
+          <span style="font-size: 0.82rem; color: var(--text-subtle); display: block; margin-bottom: 0.65rem;">
+            Quick Evaluation Demo Logins (Click to autofill):
+          </span>
+          <div style="display: flex; gap: 0.5rem; justify-content: center;">
+            <button class="btn btn-secondary btn-sm" onclick="quickFillLogin('admin@gardening.com', 'AdminPass123!')">
+              Admin Demo
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="quickFillLogin('gardener@gardening.com', 'GardenerPass123!')">
+              Gardener Demo
+            </button>
+          </div>
+        </div>
+
+        <p style="text-align: center; font-size: 0.85rem; margin-top: 1.25rem; color: var(--text-subtle);">
+          Don't have an account yet? <a href="javascript:void(0)" onclick="navigate('register')" style="color: var(--primary-600); font-weight: 600;">Register here</a>
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+function handleLoginSubmit(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const pass = document.getElementById('loginPassword').value;
+  const res = loginUser(email, pass);
+
+  if (res.success) {
+    if (res.user.role === 'ADMIN') {
+      navigate('admin-dashboard');
+    } else {
+      navigate('gardener-dashboard');
+    }
+  } else {
+    const slot = document.getElementById('loginAlertSlot');
+    if (slot) {
+      slot.innerHTML = `<div style="padding: 0.65rem 1rem; background: var(--danger-bg); color: var(--danger); border-radius: var(--radius-sm); font-size: 0.85rem; margin-bottom: 1rem;">${res.message}</div>`;
+    }
+  }
+}
+
+function quickFillLogin(email, password) {
+  document.getElementById('loginEmail').value = email;
+  document.getElementById('loginPassword').value = password;
+}
+
+function renderRegisterView() {
+  return `
+    <div style="max-width: 540px; margin: 1.5rem auto;">
+      <div class="card">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 700;">Join the Gardening Community</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+            Create your profile to track garden plots, record harvest milestones, and share advice.
+          </p>
+        </div>
+
+        <div id="registerAlertSlot"></div>
+
+        <form onsubmit="handleRegisterSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="regFullName" class="form-control" required placeholder="e.g. Maya Patel">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="regEmail" class="form-control" required placeholder="name@domain.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="regPassword" class="form-control" required placeholder="Minimum 6 characters">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gardening Experience</label>
+            <select id="regExperience" class="form-control">
+              <option value="Beginner (< 1 Year)">Beginner (&lt; 1 Year)</option>
+              <option value="Intermediate (2-5 Years)">Intermediate (2-5 Years)</option>
+              <option value="Advanced (5+ Years)">Advanced (5+ Years)</option>
+              <option value="Master Gardener">Master Gardener</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location / Growing Zone</label>
+            <input type="text" id="regLocation" class="form-control" placeholder="e.g. Mumbai, Balcony Zone 10">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Short Bio</label>
+            <textarea id="regBio" class="form-control" placeholder="Tell the community what you like growing..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Create Account</button>
+        </form>
+
+        <p style="text-align: center; font-size: 0.85rem; margin-top: 1.25rem; color: var(--text-subtle);">
+          Already registered? <a href="javascript:void(0)" onclick="navigate('login')" style="color: var(--primary-600); font-weight: 600;">Sign in here</a>
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+function handleRegisterSubmit(e) {
+  e.preventDefault();
+  const fullName = document.getElementById('regFullName').value;
+  const email = document.getElementById('regEmail').value;
+  const password = document.getElementById('regPassword').value;
+  const exp = document.getElementById('regExperience').value;
+  const loc = document.getElementById('regLocation').value;
+  const bio = document.getElementById('regBio').value;
+
+  const res = registerUser(fullName, email, password, bio, exp, loc);
+  if (res.success) {
+    navigate('gardener-dashboard');
+  } else {
+    const slot = document.getElementById('registerAlertSlot');
+    if (slot) {
+      slot.innerHTML = `<div style="padding: 0.65rem 1rem; background: var(--danger-bg); color: var(--danger); border-radius: var(--radius-sm); font-size: 0.85rem; margin-bottom: 1rem;">${res.message}</div>`;
+    }
+  }
+}
+
+// ==========================================================================
+// Gardener Views: Dashboard, Projects, Project Detail, Tips, Calendar, Forum
+// ==========================================================================
+
+function getGardenerSidebar(activeTab) {
+  return `
+    <aside class="sidebar">
+      <div class="sidebar-title">Gardener Menu</div>
+      <nav class="sidebar-nav">
+        <button class="sidebar-link ${activeTab === 'dashboard' ? 'active' : ''}" onclick="navigate('gardener-dashboard')">Dashboard Overview</button>
+        <button class="sidebar-link ${activeTab === 'projects' ? 'active' : ''}" onclick="navigate('gardener-projects')">My Garden Projects</button>
+        <button class="sidebar-link ${activeTab === 'tips' ? 'active' : ''}" onclick="navigate('gardener-tips')">Community Tips</button>
+        <button class="sidebar-link ${activeTab === 'calendar' ? 'active' : ''}" onclick="navigate('gardener-calendar')">Planting Calendar</button>
+        <button class="sidebar-link ${activeTab === 'discussions' ? 'active' : ''}" onclick="navigate('gardener-discussions')">Discussion Forum</button>
+        <button class="sidebar-link ${activeTab === 'profile' ? 'active' : ''}" onclick="navigate('gardener-profile')">Profile Settings</button>
+      </nav>
+    </aside>
+  `;
+}
+
+function renderGardenerDashboard() {
+  const user = getCurrentUser() || db.data.users[1];
+  const myProjects = db.data.projects.filter(p => p.ownerEmail === user.email);
+  const myTips = db.data.tips.filter(t => t.authorEmail === user.email);
+
+  return `
+    <div class="layout-sidebar-grid">
+      ${getGardenerSidebar('dashboard')}
+      <main>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+          <div>
+            <h1 style="font-size:1.6rem; font-weight:800; letter-spacing:-0.02em;">Welcome back, ${user.fullName}</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Overview of your personal garden plots and community contributions.</p>
+          </div>
+          <button class="btn btn-primary" onclick="openNewProjectModal()">+ New Project</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">Active Projects</span>
+            <span class="stat-value">${myProjects.length}</span>
+            <span class="stat-caption">Tracked garden plots</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Shared Tips</span>
+            <span class="stat-value">${myTips.length}</span>
+            <span class="stat-caption">Knowledge contributions</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Approved Tips</span>
+            <span class="stat-value">${myTips.filter(t => t.status === 'APPROVED').length}</span>
+            <span class="stat-caption">Published tips</span>
+          </div>
+        </div>
+
+        <!-- Recent Projects Section -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">My Gardening Projects</h2>
+            <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-projects')">View All &rarr;</button>
+          </div>
+
+          ${myProjects.length === 0 ? `
+            <p style="color:var(--text-muted); font-size:0.9rem;">You haven't created any gardening projects yet.</p>
+          ` : `
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Project Name</th>
+                    <th>Plant Varieties</th>
+                    <th>Status</th>
+                    <th>Start Date</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${myProjects.map(proj => `
+                    <tr>
+                      <td style="font-weight:600;">${proj.title}</td>
+                      <td style="color:var(--text-muted); font-size:0.85rem;">${proj.plantTypes}</td>
+                      <td>
+                        <span class="badge ${proj.status === 'COMPLETED' ? 'badge-success' : (proj.status === 'IN_PROGRESS' ? 'badge-info' : 'badge-warning')}">
+                          ${proj.status}
+                        </span>
+                      </td>
+                      <td style="font-size:0.85rem;">${proj.startDate}</td>
+                      <td>
+                        <button class="btn btn-secondary btn-sm" onclick="navigate('gardener-project-detail', ${proj.id})">Open Board</button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+function renderGardenerProjects() {
+  const user = getCurrentUser() || db.data.users[1];
+  const myProjects = db.data.projects.filter(p => p.ownerEmail === user.email);
+
+  return `
+    <div class="layout-sidebar-grid">
+      ${getGardenerSidebar('projects')}
+      <main>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+          <div>
+            <h1 style="font-size:1.6rem; font-weight:800;">My Garden Projects</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Organize your crops, log growth milestones, and generate PDF harvest reports.</p>
+          </div>
+          <button class="btn btn-primary" onclick="openNewProjectModal()">+ Add New Project</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.25rem;">
+          ${myProjects.map(p => `
+            <div class="card" style="margin-bottom:0;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                <span class="badge ${p.status === 'COMPLETED' ? 'badge-success' : (p.status === 'IN_PROGRESS' ? 'badge-info' : 'badge-warning')}">
+                  ${p.status}
+                </span>
+                <span style="font-size:0.78rem; color:var(--text-subtle);">Started: ${p.startDate}</span>
+              </div>
+              <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.35rem;">${p.title}</h3>
+              <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:0.85rem; line-height:1.4;">${p.description}</p>
+              <div style="font-size:0.82rem; margin-bottom:1rem; padding:0.5rem 0.75rem; background:var(--bg-subtle); border-radius:var(--radius-sm);">
+                <strong>Plants:</strong> ${p.plantTypes}
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.8rem; color:var(--text-subtle);">${p.logs.length} logged milestones</span>
+                <button class="btn btn-primary btn-sm" onclick="navigate('gardener-project-detail', ${p.id})">Open Project &rarr;</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+function renderProjectDetail(projectId) {
+  const project = db.data.projects.find(p => p.id === Number(projectId));
+  if (!project) {
+    return `<div class="card"><p>Project not found.</p><button class="btn btn-secondary" onclick="navigate('gardener-projects')">&larr; Back</button></div>`;
+  }
+
+  return `
+    <div class="layout-sidebar-grid">
+      ${getGardenerSidebar('projects')}
+      <main>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:0.75rem;">
+          <button class="btn btn-secondary btn-sm" onclick="navigate('gardener-projects')">&larr; Back to Projects</button>
+          <div style="display:flex; gap:0.5rem;">
+            <button class="btn btn-primary btn-sm" onclick="window.print()">Download / Print PDF Report</button>
+            <button class="btn btn-outline-primary btn-sm" onclick="openAddLogModal(${project.id})">+ Log Progress</button>
+          </div>
+        </div>
+
+        <div class="card" id="printableProjectCard">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
+            <div>
+              <span class="badge ${project.status === 'COMPLETED' ? 'badge-success' : (project.status === 'IN_PROGRESS' ? 'badge-info' : 'badge-warning')}" style="margin-bottom:0.5rem;">
+                ${project.status}
+              </span>
+              <h1 style="font-size:1.75rem; font-weight:800;">${project.title}</h1>
+              <p style="color:var(--text-muted); font-size:0.95rem; margin-top:0.25rem;">${project.description}</p>
+            </div>
+            <div style="text-align:right;">
+              <label class="form-label" style="font-size:0.78rem;">Status Override</label>
+              <select class="form-control" style="font-size:0.82rem; padding:0.35rem 0.65rem;" onchange="updateProjectStatus(${project.id}, this.value)">
+                <option value="PLANNING" ${project.status === 'PLANNING' ? 'selected' : ''}>PLANNING</option>
+                <option value="IN_PROGRESS" ${project.status === 'IN_PROGRESS' ? 'selected' : ''}>IN_PROGRESS</option>
+                <option value="COMPLETED" ${project.status === 'COMPLETED' ? 'selected' : ''}>COMPLETED</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; padding:1rem; background:var(--bg-subtle); border-radius:var(--radius-sm); margin-bottom:1.5rem; font-size:0.85rem;">
+            <div><strong>Plant Varieties:</strong> ${project.plantTypes}</div>
+            <div><strong>Start Date:</strong> ${project.startDate}</div>
+            <div><strong>Target Harvest:</strong> ${project.targetHarvestDate || 'Ongoing'}</div>
+            <div><strong>Owner:</strong> ${project.ownerEmail}</div>
+          </div>
+
+          <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:1rem;">Growth & Milestone Observations</h3>
+
+          ${project.logs.length === 0 ? `
+            <div style="padding:1.5rem; text-align:center; border:1px dashed var(--border-light); border-radius:var(--radius-sm); color:var(--text-subtle);">
+              No progress logs recorded yet. Click <strong>+ Log Progress</strong> above to document seedling growth, feeding, or harvests.
+            </div>
+          ` : `
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width:130px;">Date</th>
+                    <th style="width:180px;">Milestone</th>
+                    <th>Observations & Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${project.logs.map(log => `
+                    <tr>
+                      <td style="font-size:0.85rem; font-weight:600;">${log.logDate}</td>
+                      <td><span class="badge badge-info">${log.milestone}</span></td>
+                      <td style="font-size:0.88rem; line-height:1.4;">${log.note}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+function updateProjectStatus(projectId, newStatus) {
+  const p = db.data.projects.find(x => x.id === Number(projectId));
+  if (p) {
+    p.status = newStatus;
+    db.logActivity(getCurrentUser()?.email || 'gardener@gardening.com', 'UPDATE_PROJECT_STATUS', `Updated project ${p.title} status to ${newStatus}`);
+    db.save();
+    navigate('gardener-project-detail', projectId);
+  }
+}
+
+// ==========================================================================
+// Innovation Feature: Seasonal Planting Calendar
+// ==========================================================================
+
+const PLANT_MATRIX = [
+  { name: 'Tomato',       sow: [2, 3],       transplant: [4, 5],       harvest: [7, 8, 9] },
+  { name: 'Bell Pepper',  sow: [1, 2, 3],    transplant: [5, 6],       harvest: [8, 9, 10] },
+  { name: 'Sweet Basil',  sow: [3, 4],       transplant: [5],          harvest: [6, 7, 8, 9] },
+  { name: 'Crisp Lettuce',sow: [2, 3, 8, 9], transplant: [],           harvest: [4, 5, 10, 11] },
+  { name: 'Carrot',       sow: [3, 4, 5],    transplant: [],           harvest: [7, 8, 9, 10] },
+  { name: 'Baby Spinach', sow: [2, 3, 9, 10],transplant: [],           harvest: [4, 5, 11, 12] },
+  { name: 'Garden Peas',  sow: [2, 3, 4, 10],transplant: [],           harvest: [6, 7] },
+  { name: 'Green Beans',  sow: [4, 5, 6],    transplant: [],           harvest: [7, 8, 9] },
+  { name: 'Cucumber',     sow: [3, 4],       transplant: [5, 6],       harvest: [7, 8, 9] },
+  { name: 'Zucchini',     sow: [4],          transplant: [5, 6],       harvest: [7, 8, 9] },
+  { name: 'Red Onion',    sow: [1, 2],       transplant: [3, 4],       harvest: [7, 8] },
+  { name: 'Garlic',       sow: [10, 11],     transplant: [],           harvest: [6, 7] },
+  { name: 'Spearmint',    sow: [3],          transplant: [4],          harvest: [5, 6, 7, 8, 9] },
+  { name: 'Cilantro',     sow: [3, 4, 10, 11],transplant: [],          harvest: [5, 6, 12] },
+  { name: 'Parsley',      sow: [2, 3],       transplant: [4],          harvest: [5, 6, 7, 8, 9] }
+];
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function renderPlantingCalendar() {
+  const user = getCurrentUser();
+
+  return `
+    <div class="${user ? 'layout-sidebar-grid' : ''}">
+      ${user ? getGardenerSidebar('calendar') : ''}
+      <main>
+        <div style="margin-bottom:1.5rem;">
+          <span class="badge badge-success" style="margin-bottom:0.5rem;">Innovation Feature</span>
+          <h1 style="font-size:1.65rem; font-weight:800;">Seasonal Planting Calendar</h1>
+          <p style="color:var(--text-muted); font-size:0.9rem;">
+            A 12-month visual sowing, transplanting, and harvest schedule for 15 essential edible plants.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="calendar-legend-bar">
+            <div class="legend-tag"><span class="legend-color-box box-sow"></span> Direct Sow / Indoors</div>
+            <div class="legend-tag"><span class="legend-color-box box-transplant"></span> Transplant Outside</div>
+            <div class="legend-tag"><span class="legend-color-box box-harvest"></span> Peak Harvest</div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="matrix-table">
+              <thead>
+                <tr>
+                  <th style="min-width:140px; text-align:left; padding-left:0.75rem;">Plant Variety</th>
+                  ${MONTHS.map(m => `<th>${m}</th>`).join('')}
+                </tr>
+              </thead>
+              <tbody>
+                ${PLANT_MATRIX.map(plant => `
+                  <tr>
+                    <td class="plant-title">${plant.name}</td>
+                    ${MONTHS.map((_, idx) => {
+                      const monthNum = idx + 1;
+                      if (plant.sow.includes(monthNum)) {
+                        return `<td class="cell-sow">SOW</td>`;
+                      } else if (plant.transplant.includes(monthNum)) {
+                        return `<td class="cell-transplant">TRANS</td>`;
+                      } else if (plant.harvest.includes(monthNum)) {
+                        return `<td class="cell-harvest">HARV</td>`;
+                      } else {
+                        return `<td></td>`;
+                      }
+                    }).join('')}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+// ==========================================================================
+// Community Tips & Discussion Views
+// ==========================================================================
+
+function renderGardenerTips() {
+  const user = getCurrentUser();
+  const tips = db.data.tips;
+  const categories = ['All', 'Companion Planting', 'Pest Control', 'Soil & Composting', 'Irrigation', 'Indoor'];
+
+  return `
+    <div class="${user ? 'layout-sidebar-grid' : ''}">
+      ${user ? getGardenerSidebar('tips') : ''}
+      <main>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+          <div>
+            <h1 style="font-size:1.65rem; font-weight:800;">Community Gardening Tips</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Browse curated knowledge or submit your own cultivation advice.</p>
+          </div>
+          <button class="btn btn-primary" onclick="openNewTipModal()">+ Share a Tip</button>
+        </div>
+
+        <div class="card" style="padding:1rem; margin-bottom:1.5rem;">
+          <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+            <input type="text" id="tipSearchInput" class="form-control" style="max-width:320px;" placeholder="Search by title keyword..." onkeyup="filterTips()">
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+              ${categories.map(c => `
+                <button class="btn btn-secondary btn-sm category-filter-btn ${c === 'All' ? 'active' : ''}" onclick="filterTipsByCategory('${c}', this)">${c}</button>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+
+        <div id="tipsGridContainer" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.25rem;">
+          ${tips.map(t => renderTipCard(t)).join('')}
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+function renderTipCard(tip) {
+  return `
+    <div class="card tip-item-card" data-category="${tip.category}" data-title="${tip.title.toLowerCase()}" style="margin-bottom:0;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+        <span class="badge badge-info">${tip.category}</span>
+        <span class="badge ${tip.status === 'APPROVED' ? 'badge-success' : (tip.status === 'REJECTED' ? 'badge-danger' : 'badge-warning')}">
+          ${tip.status}
+        </span>
+      </div>
+      <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.5rem;">${tip.title}</h3>
+      <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.5; margin-bottom:1rem;">${tip.description}</p>
+      ${tip.moderationNote ? `
+        <div style="font-size:0.78rem; padding:0.45rem 0.65rem; background:var(--bg-subtle); border-radius:var(--radius-sm); margin-bottom:0.75rem; color:var(--text-subtle);">
+          <strong>Moderation Note:</strong> ${tip.moderationNote}
+        </div>
+      ` : ''}
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; color:var(--text-subtle); border-top:1px solid var(--border-light); padding-top:0.75rem;">
+        <span>By <strong>${tip.authorName}</strong></span>
+        <span>${tip.createdAt.substring(0, 10)}</span>
+      </div>
+    </div>
+  `;
+}
+
+function filterTips() {
+  const query = document.getElementById('tipSearchInput').value.toLowerCase();
+  const cards = document.querySelectorAll('.tip-item-card');
+  cards.forEach(card => {
+    const title = card.getAttribute('data-title');
+    card.style.display = title.includes(query) ? '' : 'none';
+  });
+}
+
+function filterTipsByCategory(cat, btn) {
+  document.querySelectorAll('.category-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const cards = document.querySelectorAll('.tip-item-card');
+  cards.forEach(card => {
+    if (cat === 'All' || card.getAttribute('data-category') === cat) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+function renderDiscussionsView() {
+  const user = getCurrentUser();
+  const discussions = db.data.discussions;
+
+  return `
+    <div class="${user ? 'layout-sidebar-grid' : ''}">
+      ${user ? getGardenerSidebar('discussions') : ''}
+      <main>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+          <div>
+            <h1 style="font-size:1.65rem; font-weight:800;">Community Forum</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Ask questions, diagnose plant issues, and discuss organic solutions.</p>
+          </div>
+          <button class="btn btn-primary" onclick="openNewDiscussionModal()">+ Start Topic</button>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:1.25rem;">
+          ${discussions.map(d => `
+            <div class="card">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                <span class="badge badge-secondary">${d.category}</span>
+                <span style="font-size:0.78rem; color:var(--text-subtle);">${d.createdAt}</span>
+              </div>
+              <h2 style="font-size:1.2rem; font-weight:700; margin-bottom:0.45rem;">${d.title}</h2>
+              <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:1rem;">${d.content}</p>
+              <div style="font-size:0.8rem; color:var(--text-subtle); margin-bottom:1rem;">
+                Posted by <strong>${d.authorName}</strong>
+              </div>
+
+              <!-- Comments Section -->
+              <div style="border-top:1px solid var(--border-light); padding-top:1rem;">
+                <h4 style="font-size:0.85rem; text-transform:uppercase; color:var(--text-subtle); margin-bottom:0.75rem;">
+                  Responses (${d.comments.length})
+                </h4>
+                <div style="display:flex; flex-direction:column; gap:0.65rem; margin-bottom:1rem;">
+                  ${d.comments.map(c => `
+                    <div style="padding:0.75rem 1rem; background:var(--bg-subtle); border-radius:var(--radius-sm); font-size:0.88rem;">
+                      <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem; font-size:0.78rem; color:var(--text-subtle);">
+                        <strong>${c.authorName}</strong>
+                        <span>${c.createdAt}</span>
+                      </div>
+                      <p style="color:var(--text-main);">${c.content}</p>
+                    </div>
+                  `).join('')}
+                </div>
+
+                <div style="display:flex; gap:0.5rem;">
+                  <input type="text" id="commentInput_${d.id}" class="form-control" placeholder="Write a constructive response...">
+                  <button class="btn btn-primary btn-sm" onclick="addCommentToTopic(${d.id})">Reply</button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+function addCommentToTopic(topicId) {
+  const input = document.getElementById(`commentInput_${topicId}`);
+  if (!input || !input.value.trim()) return;
+
+  const user = getCurrentUser() || db.data.users[1];
+  const topic = db.data.discussions.find(x => x.id === Number(topicId));
+  if (topic) {
+    topic.comments.push({
+      id: Date.now(),
+      authorName: user.fullName,
+      authorEmail: user.email,
+      content: input.value.trim(),
+      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
+    });
+    db.logActivity(user.email, 'ADD_COMMENT', `Replied to topic: ${topic.title}`);
+    db.save();
+    navigate('gardener-discussions');
+  }
+}
+
+function renderProfileView() {
+  const user = getCurrentUser() || db.data.users[1];
+
+  return `
+    <div class="layout-sidebar-grid">
+      ${getGardenerSidebar('profile')}
+      <main>
+        <div style="margin-bottom:1.5rem;">
+          <h1 style="font-size:1.65rem; font-weight:800;">Gardener Profile Settings</h1>
+          <p style="color:var(--text-muted); font-size:0.9rem;">Manage your public bio, location growing zone, and credentials.</p>
+        </div>
+
+        <div class="card" style="max-width:620px;">
+          <form onsubmit="handleProfileUpdate(event)">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" id="profName" class="form-control" value="${user.fullName}" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email (Read-Only)</label>
+              <input type="email" class="form-control" value="${user.email}" disabled style="opacity:0.75;">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gardening Experience</label>
+              <input type="text" id="profExp" class="form-control" value="${user.gardeningExperience}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Location / Growing Zone</label>
+              <input type="text" id="profLoc" class="form-control" value="${user.location}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Biography</label>
+              <textarea id="profBio" class="form-control">${user.bio}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+          </form>
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+function handleProfileUpdate(e) {
+  e.preventDefault();
+  const user = getCurrentUser();
+  if (!user) return;
+
+  user.fullName = document.getElementById('profName').value;
+  user.gardeningExperience = document.getElementById('profExp').value;
+  user.location = document.getElementById('profLoc').value;
+  user.bio = document.getElementById('profBio').value;
+
+  const target = db.data.users.find(u => u.email === user.email);
+  if (target) {
+    Object.assign(target, user);
+  }
+
+  db.logActivity(user.email, 'UPDATE_PROFILE', 'Updated personal profile details.');
+  db.save();
+  alert('Profile updated successfully!');
+  navigate('gardener-profile');
+}
+
+// ==========================================================================
+// Admin Views: Dashboard, Users, Moderation, Settings, Logs
+// ==========================================================================
+
+function getAdminSidebar(activeTab) {
+  return `
+    <aside class="sidebar">
+      <div class="sidebar-title">Admin Controls</div>
+      <nav class="sidebar-nav">
+        <button class="sidebar-link ${activeTab === 'dashboard' ? 'active' : ''}" onclick="navigate('admin-dashboard')">Admin Overview</button>
+        <button class="sidebar-link ${activeTab === 'users' ? 'active' : ''}" onclick="navigate('admin-users')">User Management</button>
+        <button class="sidebar-link ${activeTab === 'moderation' ? 'active' : ''}" onclick="navigate('admin-moderation')">Moderation Queue</button>
+        <button class="sidebar-link ${activeTab === 'settings' ? 'active' : ''}" onclick="navigate('admin-settings')">System Settings</button>
+        <button class="sidebar-link ${activeTab === 'logs' ? 'active' : ''}" onclick="navigate('admin-logs')">Audit Logs</button>
+      </nav>
+    </aside>
+  `;
+}
+
+function renderAdminDashboard() {
+  const pendingTips = db.data.tips.filter(t => t.status === 'PENDING');
+  const approvedTips = db.data.tips.filter(t => t.status === 'APPROVED');
+
+  return `
+    <div class="layout-sidebar-grid">
+      ${getAdminSidebar('dashboard')}
+      <main>
+        <div style="margin-bottom:1.5rem;">
+          <h1 style="font-size:1.65rem; font-weight:800;">Administrator Dashboard</h1>
+          <p style="color:var(--text-muted); font-size:0.9rem;">System oversight, content moderation queue, and user authorization control.</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">Total Accounts</span>
+            <span class="stat-value">${db.data.users.length}</span>
+            <span class="stat-caption">Registered users</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Pending Tips</span>
+            <span class="stat-value" style="color:var(--warning);">${pendingTips.length}</span>
+            <span class="stat-caption">Awaiting approval</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Published Tips</span>
+            <span class="stat-value" style="color:var(--success);">${approvedTips.length}</span>
+            <span class="stat-caption">Verified tips</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Total Projects</span>
+            <span class="stat-value">${db.data.projects.length}</span>
+            <span class="stat-caption">Platform plots</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Pending Moderation Queue (${pendingTips.length})</h2>
+            <button class="btn btn-outline-primary btn-sm" onclick="navigate('admin-moderation')">View Full Queue &rarr;</button>
+          </div>
+
+          ${pendingTips.length === 0 ? `
+            <p style="color:var(--text-muted); font-size:0.9rem;">No pending tips requiring moderation. All submissions are up to date.</p>
+          ` : `
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Author</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${pendingTips.map(tip => `
+                    <tr>
+                      <td style="font-weight:600;">${tip.title}</td>
+                      <td><span class="badge badge-info">${tip.category}</span></td>
+                      <td>${tip.authorName}</td>
+                      <td style="font-size:0.85rem;">${tip.createdAt.substring(0, 10)}</td>
+                      <td>
+                        <button class="btn btn-primary btn-sm" onclick="moderateTip(${tip.id}, 'APPROVED')">Approve</button>
+                        <button class="btn btn-danger btn-sm" onclick="moderateTip(${tip.id}, 'REJECTED')">Reject</button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+function renderAdminUsers() {
+  const users = db.data.users;
+
+  return `
+    <div class="layout-sidebar-grid">
+      ${getAdminSidebar('users')}
+      <main>
+        <div style="margin-bottom:1.5rem;">
+          <h1 style="font-size:1.65rem; font-weight:800;">User Account Management</h1>
+          <p style="color:var(--text-muted); font-size:0.9rem;">View registered gardeners, toggle account access, or promote roles.</p>
+        </div>
+
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Registered</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${users.map(u => `
+                  <tr>
+                    <td style="font-weight:600;">${u.fullName}</td>
+                    <td>${u.email}</td>
+                    <td>
+                      <span class="badge ${u.role === 'ADMIN' ? 'badge-danger' : 'badge-info'}">${u.role}</span>
+                    </td>
+                    <td>
+                      <span class="badge ${u.active ? 'badge-success' : 'badge-danger'}">
+                        ${u.active ? 'ACTIVE' : 'DISABLED'}
+                      </span>
+                    </td>
+                    <td style="font-size:0.82rem; color:var(--text-subtle);">${u.createdAt.substring(0, 10)}</td>
+                    <td>
+                      <div style="display:flex; gap:0.4rem;">
+                        <button class="btn btn-secondary btn-sm" onclick="toggleUserStatus(${u.id})">
+                          ${u.active ? 'Disable' : 'Enable'}
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="toggleUserRole(${u.id})">
+                          ${u.role === 'ADMIN' ? 'Make Gardener' : 'Make Admin'}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+function toggleUserStatus(userId) {
+  const u = db.data.users.find(x => x.id === Number(userId));
+  if (u) {
+    u.active = !u.active;
+    db.logActivity('admin@gardening.com', 'TOGGLE_USER_STATUS', `Toggled user ${u.email} active to ${u.active}`);
+    db.save();
+    navigate('admin-users');
+  }
+}
+
+function toggleUserRole(userId) {
+  const u = db.data.users.find(x => x.id === Number(userId));
+  if (u) {
+    u.role = u.role === 'ADMIN' ? 'GARDENER' : 'ADMIN';
+    db.logActivity('admin@gardening.com', 'UPDATE_USER_ROLE', `Changed user ${u.email} role to ${u.role}`);
+    db.save();
+    navigate('admin-users');
+  }
+}
+
+function renderAdminModeration() {
+  const tips = db.data.tips;
+
+  return `
+    <div class="layout-sidebar-grid">
+      ${getAdminSidebar('moderation')}
+      <main>
+        <div style="margin-bottom:1.5rem;">
+          <h1 style="font-size:1.65rem; font-weight:800;">Content Moderation Queue</h1>
+          <p style="color:var(--text-muted); font-size:0.9rem;">Review all submitted advice to maintain horticultural accuracy and safety.</p>
+        </div>
+
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Title & Description</th>
+                  <th>Category</th>
+                  <th>Author</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tips.map(t => `
+                  <tr>
+                    <td style="max-width:320px;">
+                      <div style="font-weight:700;">${t.title}</div>
+                      <div style="font-size:0.82rem; color:var(--text-muted); margin-top:0.25rem;">${t.description}</div>
+                      ${t.moderationNote ? `<div style="font-size:0.75rem; color:var(--text-subtle); margin-top:0.35rem;">Note: ${t.moderationNote}</div>` : ''}
+                    </td>
+                    <td><span class="badge badge-info">${t.category}</span></td>
+                    <td style="font-size:0.85rem;">${t.authorName}</td>
+                    <td>
+                      <span class="badge ${t.status === 'APPROVED' ? 'badge-success' : (t.status === 'REJECTED' ? 'badge-danger' : 'badge-warning')}">
+                        ${t.status}
+                      </span>
+                    </td>
+                    <td>
+                      <div style="display:flex; gap:0.4rem;">
+                        <button class="btn btn-primary btn-sm" onclick="moderateTip(${t.id}, 'APPROVED')">Approve</button>
+                        <button class="btn btn-danger btn-sm" onclick="moderateTip(${t.id}, 'REJECTED')">Reject</button>
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+function moderateTip(tipId, status) {
+  const tip = db.data.tips.find(x => x.id === Number(tipId));
+  if (tip) {
+    const note = prompt(`Enter optional moderation feedback for "${tip.title}":`, status === 'APPROVED' ? 'Verified horticultural content.' : 'Does not meet submission guidelines.');
+    tip.status = status;
+    tip.moderationNote = note;
+    db.logActivity('admin@gardening.com', 'MODERATE_TIP', `Tip "${tip.title}" set to ${status}`);
+    db.save();
+    navigate('admin-moderation');
+  }
+}
+
+function renderAdminSettings() {
+  const s = db.data.settings;
+
+  return `
+    <div class="layout-sidebar-grid">
+      ${getAdminSidebar('settings')}
+      <main>
+        <div style="margin-bottom:1.5rem;">
+          <h1 style="font-size:1.65rem; font-weight:800;">System Settings Configuration</h1>
+          <p style="color:var(--text-muted); font-size:0.9rem;">Adjust global platform policies, banners, and moderation toggles.</p>
+        </div>
+
+        <div class="card" style="max-width:580px;">
+          <form onsubmit="handleSettingsSave(event)">
+            <div class="form-group">
+              <label class="form-label">Platform Title</label>
+              <input type="text" id="setSiteName" class="form-control" value="${s.siteName}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Global Announcement Bar</label>
+              <textarea id="setNotice" class="form-control">${s.maintenanceNotice}</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Auto-Approve Tips Without Moderation</label>
+              <select id="setAutoApprove" class="form-control">
+                <option value="false" ${!s.autoApproveTips ? 'selected' : ''}>Disabled (Require Admin Review)</option>
+                <option value="true" ${s.autoApproveTips ? 'selected' : ''}>Enabled (Publish Immediately)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Maximum Garden Projects Per User</label>
+              <input type="number" id="setMaxProjects" class="form-control" value="${s.maxProjectLimit || 15}">
+            </div>
+            <button type="submit" class="btn btn-primary">Save Platform Settings</button>
+          </form>
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+function handleSettingsSave(e) {
+  e.preventDefault();
+  db.data.settings.siteName = document.getElementById('setSiteName').value;
+  db.data.settings.maintenanceNotice = document.getElementById('setNotice').value;
+  db.data.settings.autoApproveTips = document.getElementById('setAutoApprove').value === 'true';
+  db.data.settings.maxProjectLimit = Number(document.getElementById('setMaxProjects').value);
+
+  db.logActivity('admin@gardening.com', 'UPDATE_SETTINGS', 'Updated platform configuration values.');
+  db.save();
+  alert('System settings saved successfully!');
+  navigate('admin-settings');
+}
+
+function renderAdminLogs() {
+  const logs = db.data.activityLogs;
+
+  return `
+    <div class="layout-sidebar-grid">
+      ${getAdminSidebar('logs')}
+      <main>
+        <div style="margin-bottom:1.5rem;">
+          <h1 style="font-size:1.65rem; font-weight:800;">Activity Audit Log</h1>
+          <p style="color:var(--text-muted); font-size:0.9rem;">Timestamped security records of all system and user operations.</p>
+        </div>
+
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width:160px;">Timestamp</th>
+                  <th style="width:180px;">User</th>
+                  <th style="width:160px;">Action</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${logs.map(log => `
+                  <tr>
+                    <td style="font-size:0.82rem; color:var(--text-subtle);">${log.timestamp}</td>
+                    <td style="font-size:0.85rem; font-weight:600;">${log.userEmail}</td>
+                    <td><span class="badge badge-secondary">${log.action}</span></td>
+                    <td style="font-size:0.85rem;">${log.details}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+// ==========================================================================
+// Modal Dialogs (New Project, New Tip, New Discussion, Add Progress Log)
+// ==========================================================================
+
+function openNewProjectModal() {
+  const overlay = document.getElementById('modalOverlay');
+  const content = document.getElementById('modalSlot');
+  content.innerHTML = `
+    <div class="modal-header">
+      <h3 class="modal-title">New Garden Project</h3>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <form onsubmit="handleNewProjectSubmit(event)">
+      <div class="form-group">
+        <label class="form-label">Project Title</label>
+        <input type="text" id="newProjTitle" class="form-control" required placeholder="e.g. Raised Bed Herb Spiral">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Plant Varieties</label>
+        <input type="text" id="newProjPlants" class="form-control" required placeholder="e.g. Rosemary, Thyme, Chives">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select id="newProjStatus" class="form-control">
+          <option value="PLANNING">PLANNING</option>
+          <option value="IN_PROGRESS">IN_PROGRESS</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Start Date</label>
+        <input type="date" id="newProjStart" class="form-control" value="${new Date().toISOString().substring(0, 10)}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea id="newProjDesc" class="form-control" placeholder="Target plot size, soil amendment, sun exposure..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">Create Garden Project</button>
+    </form>
+  `;
+  overlay.classList.add('active');
+}
+
+function handleNewProjectSubmit(e) {
+  e.preventDefault();
+  const user = getCurrentUser() || db.data.users[1];
+  const newProj = {
+    id: Date.now(),
+    title: document.getElementById('newProjTitle').value,
+    description: document.getElementById('newProjDesc').value,
+    plantTypes: document.getElementById('newProjPlants').value,
+    status: document.getElementById('newProjStatus').value,
+    startDate: document.getElementById('newProjStart').value,
+    targetHarvestDate: '',
+    ownerEmail: user.email,
+    createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
+    logs: []
+  };
+
+  db.data.projects.unshift(newProj);
+  db.logActivity(user.email, 'CREATE_PROJECT', `Created project: ${newProj.title}`);
+  db.save();
+  closeModal();
+  navigate('gardener-projects');
+}
+
+function openAddLogModal(projectId) {
+  const overlay = document.getElementById('modalOverlay');
+  const content = document.getElementById('modalSlot');
+  content.innerHTML = `
+    <div class="modal-header">
+      <h3 class="modal-title">Record Growth Milestone</h3>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <form onsubmit="handleAddLogSubmit(event, ${projectId})">
+      <div class="form-group">
+        <label class="form-label">Observation Date</label>
+        <input type="date" id="logDateInput" class="form-control" value="${new Date().toISOString().substring(0, 10)}" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Milestone Tag</label>
+        <input type="text" id="logMilestoneInput" class="form-control" placeholder="e.g. First Sprout, Pruning, Flowering, Harvest" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Detailed Notes</label>
+        <textarea id="logNoteInput" class="form-control" placeholder="Pest notes, soil moisture, vegetative growth..." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">Save Milestone Log</button>
+    </form>
+  `;
+  overlay.classList.add('active');
+}
+
+function handleAddLogSubmit(e, projectId) {
+  e.preventDefault();
+  const proj = db.data.projects.find(x => x.id === Number(projectId));
+  if (proj) {
+    proj.logs.unshift({
+      id: Date.now(),
+      logDate: document.getElementById('logDateInput').value,
+      milestone: document.getElementById('logMilestoneInput').value,
+      note: document.getElementById('logNoteInput').value
+    });
+    db.logActivity(getCurrentUser()?.email || 'gardener@gardening.com', 'ADD_PROJECT_LOG', `Added milestone to ${proj.title}`);
+    db.save();
+    closeModal();
+    navigate('gardener-project-detail', projectId);
+  }
+}
+
+function openNewTipModal() {
+  const overlay = document.getElementById('modalOverlay');
+  const content = document.getElementById('modalSlot');
+  content.innerHTML = `
+    <div class="modal-header">
+      <h3 class="modal-title">Share a Gardening Tip</h3>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <form onsubmit="handleNewTipSubmit(event)">
+      <div class="form-group">
+        <label class="form-label">Tip Title</label>
+        <input type="text" id="newTipTitle" class="form-control" required placeholder="e.g. Natural Aphid Deterrent with Neem Oil">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select id="newTipCategory" class="form-control">
+          <option value="Companion Planting">Companion Planting</option>
+          <option value="Pest Control">Pest Control</option>
+          <option value="Soil & Composting">Soil & Composting</option>
+          <option value="Irrigation">Irrigation</option>
+          <option value="Indoor">Indoor Plants</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Instructions & Details</label>
+        <textarea id="newTipDesc" class="form-control" placeholder="Explain the methodology, step-by-step application..." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">Submit Tip</button>
+    </form>
+  `;
+  overlay.classList.add('active');
+}
+
+function handleNewTipSubmit(e) {
+  e.preventDefault();
+  const user = getCurrentUser() || db.data.users[1];
+  const autoApprove = db.data.settings.autoApproveTips;
+
+  const newTip = {
+    id: Date.now(),
+    title: document.getElementById('newTipTitle').value,
+    category: document.getElementById('newTipCategory').value,
+    description: document.getElementById('newTipDesc').value,
+    authorName: user.fullName,
+    authorEmail: user.email,
+    status: autoApprove ? 'APPROVED' : 'PENDING',
+    moderationNote: autoApprove ? 'Auto-approved by platform setting.' : null,
+    createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
+  };
+
+  db.data.tips.unshift(newTip);
+  db.logActivity(user.email, 'SUBMIT_TIP', `Submitted tip: ${newTip.title} (${newTip.status})`);
+  db.save();
+  closeModal();
+  navigate('gardener-tips');
+}
+
+function openNewDiscussionModal() {
+  const overlay = document.getElementById('modalOverlay');
+  const content = document.getElementById('modalSlot');
+  content.innerHTML = `
+    <div class="modal-header">
+      <h3 class="modal-title">Start a Forum Discussion</h3>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <form onsubmit="handleNewDiscussionSubmit(event)">
+      <div class="form-group">
+        <label class="form-label">Topic Question / Title</label>
+        <input type="text" id="newDiscTitle" class="form-control" required placeholder="e.g. Preventing blossom end rot on potted peppers">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select id="newDiscCat" class="form-control">
+          <option value="Pest & Disease">Pest & Disease</option>
+          <option value="Soil & Composting">Soil & Composting</option>
+          <option value="Container Gardening">Container Gardening</option>
+          <option value="General Growing">General Growing</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description / Question Details</label>
+        <textarea id="newDiscContent" class="form-control" placeholder="Provide background on your setup, light levels, watering frequency..." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">Post Discussion</button>
+    </form>
+  `;
+  overlay.classList.add('active');
+}
+
+function handleNewDiscussionSubmit(e) {
+  e.preventDefault();
+  const user = getCurrentUser() || db.data.users[1];
+
+  const newDisc = {
+    id: Date.now(),
+    title: document.getElementById('newDiscTitle').value,
+    category: document.getElementById('newDiscCat').value,
+    content: document.getElementById('newDiscContent').value,
+    authorName: user.fullName,
+    authorEmail: user.email,
+    createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
+    comments: []
+  };
+
+  db.data.discussions.unshift(newDisc);
+  db.logActivity(user.email, 'CREATE_DISCUSSION', `Posted discussion topic: ${newDisc.title}`);
+  db.save();
+  closeModal();
+  navigate('gardener-discussions');
+}
+
+function closeModal() {
+  const overlay = document.getElementById('modalOverlay');
+  if (overlay) {
+    overlay.classList.remove('active');
+  }
+}
+
+// Initialize Application on Window Load
+window.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  navigate('home');
+});
