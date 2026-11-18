@@ -623,7 +623,16 @@ class AppDatabase {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === 'object') {
+          const defaults = getDefaultData();
+          return {
+            ...defaults,
+            ...parsed,
+            settings: { ...defaults.settings, ...(parsed.settings || {}) },
+            onboardingSeen: Boolean(parsed.onboardingSeen || (typeof localStorage !== 'undefined' && localStorage.getItem('GARDENING_COMMUNITY_ONBOARDING_SEEN') === 'true'))
+          };
+        }
       }
     } catch (e) {
       console.warn('LocalStorage load error, using defaults', e);
@@ -838,6 +847,7 @@ function logoutUser() {
   }
   db.data.currentUser = null;
   db.save();
+  showToast('You have been logged out.', 'info');
   navigate('home');
 }
 
@@ -890,7 +900,7 @@ function toggleTheme() {
 function updateThemeIcon(theme) {
   const btn = document.getElementById('themeToggleBtn');
   if (btn) {
-    btn.innerHTML = theme === 'dark' ? '&#9788;' : '&#9790;';
+    btn.innerHTML = theme === 'dark' ? ICONS.sun : ICONS.moon;
     btn.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
   }
 }
@@ -1027,7 +1037,7 @@ function renderHomeView() {
         <div class="hero-actions">
           ${user ? `
             <button class="btn btn-primary" onclick="navigate('${user.role === 'ADMIN' ? 'admin-dashboard' : 'gardener-dashboard'}')">
-              Open My Workspace &rarr;
+              Open My Workspace ${ICONS.arrowRight}
             </button>
             <button class="btn btn-secondary" onclick="navigate('gardener-projects')">
               My Garden Projects
@@ -1037,7 +1047,7 @@ function renderHomeView() {
             </button>
           ` : `
             <button class="btn btn-primary" onclick="navigate('register')">
-              Create Free Gardener Profile &rarr;
+              Create Free Gardener Profile ${ICONS.arrowRight}
             </button>
             <button class="btn btn-secondary" onclick="navigate('login')">
               Sign In to Account
@@ -1054,7 +1064,7 @@ function renderHomeView() {
     <div style="margin-bottom: 2rem;">
       <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 1.25rem;">
         <div>
-          <span style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--primary-600);">New to FloraHub?</span>
+          <span style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--primary-600);">New to GreenThumb?</span>
           <h2 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">How the Platform Works</h2>
         </div>
         <span style="font-size:0.85rem; color:var(--text-muted);">Three simple steps to manage your green space</span>
@@ -1067,7 +1077,7 @@ function renderHomeView() {
           <p class="onboarding-card-text">
             Create tracking boards for balcony planters, raised beds, or indoor setups. Set expected harvest windows and track companion plant pairings.
           </p>
-          <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-projects')">Explore Projects &rarr;</button>
+          <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-projects')">Explore Projects ${ICONS.arrowRight}</button>
         </div>
 
         <div class="onboarding-card">
@@ -1076,16 +1086,16 @@ function renderHomeView() {
           <p class="onboarding-card-text">
             Log sprout dates, pest treatments, soil feedings, and harvests. Generate one-click branded PDF reports to document your seasonal crop yield.
           </p>
-          <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-calendar')">View Calendar &rarr;</button>
+          <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-calendar')">View Calendar ${ICONS.arrowRight}</button>
         </div>
 
         <div class="onboarding-card">
           <span class="onboarding-step-num">Step 03 &bull; Collaborate</span>
-          <h3 class="onboarding-card-title">Live Cloud Community</h3>
+          <h3 class="onboarding-card-title">Botanical Community Hub</h3>
           <p class="onboarding-card-text">
-            Submit verified organic tips, diagnose plant diseases in community forums, and enjoy real-time multi-device cloud synchronization powered by Firebase.
+            Submit verified organic tips, diagnose plant diseases in community forums, and enjoy reliable zero-dependency local database persistence.
           </p>
-          <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-tips')">Browse Tips &rarr;</button>
+          <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-tips')">Browse Tips ${ICONS.arrowRight}</button>
         </div>
       </div>
     </div>
@@ -1094,7 +1104,7 @@ function renderHomeView() {
     ${db.data.settings.maintenanceNotice ? `
       <div style="padding: 1rem 1.5rem; background: rgba(16, 185, 129, 0.08); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: 2rem; color: var(--text-primary); font-size: 0.92rem; display: flex; align-items: center; justify-content: space-between;">
         <div><strong>Announcement:</strong> ${db.data.settings.maintenanceNotice}</div>
-        <span class="badge badge-success">Live Global Cloud Active</span>
+        <span class="badge badge-success">Local Persistence Active</span>
       </div>
     ` : ''}
 
@@ -1129,7 +1139,7 @@ function renderHomeView() {
           <h2 class="card-title">Featured Botanical Knowledge</h2>
           <p class="card-subtitle">Expert-approved advice for organic pest control, soil composting, and higher yields</p>
         </div>
-        <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-tips')">Browse All Tips &rarr;</button>
+        <button class="btn btn-outline-primary btn-sm" onclick="navigate('gardener-tips')">Browse All Tips ${ICONS.arrowRight}</button>
       </div>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
